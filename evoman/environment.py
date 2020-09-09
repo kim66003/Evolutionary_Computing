@@ -110,7 +110,7 @@ class Environment(object):
 
         # generates screen
         if self.playermode == 'human': # playing mode in fullscreen
-            flags =  DOUBLEBUF  |  FULLSCREEN
+            flags =  DOUBLEBUF  #|  FULLSCREEN
         else:
             flags =  DOUBLEBUF
         
