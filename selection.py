@@ -10,29 +10,32 @@
 
 import numpy as np
 
+
 def tournament_selection(population, k):
-    indices = np.random.randint(0,len(population.pop), k)
+    indices = np.random.randint(0, len(population.pop), k)
     best_individual = np.argmax(population.fitness[indices])
     return population.pop[indices[best_individual]]
 
+
 def fps(population):
-    return np.random.choice(population.pop, 
+    return np.random.choice(population.pop,
                             p=population.fitness/np.sum(population.fitness))
 
+
 def linear_ranking(population, sp):
-    rank_pops = [x for _,x in sorted(zip(population.fitness,population.pop))]
+    rank_pops = [x for _, x in sorted(zip(population.fitness, population.pop))]
     size = len(rank_pops)
     prob = [((2-sp)/size) + (2*i*(sp-1))/(size*(size-1))
             for i in range(size)]
     return np.random.choice(rank_pops, p=prob)
 
-class P():
-    def __init__(self):
-        self.pop = list(range(10))
-        self.fitness = np.random.randint(0,10, 10)
-        print('population: ', self.pop)
-        print('fitness: ', self.fitness)
-        
+
 if __name__ == "__main__":
+    class P():
+        def __init__(self):
+            self.pop = list(range(10))
+            self.fitness = np.random.randint(0, 10, 10)
+            print('population: ', self.pop)
+            print('fitness: ', self.fitness)
     a = P()
     print(fps(a))
