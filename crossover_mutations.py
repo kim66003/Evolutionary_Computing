@@ -14,8 +14,9 @@ from copy import deepcopy
 
 def discrete_uniform(parent1, parent2):
     child = deepcopy(parent1)
-    mask = np.random.randint(2, size=len(parent1), dtype=bool)
-    child[mask] = parent2[mask]
+    temp = deepcopy(parent2)
+    mask = np.random.randint(2, size=len(child), dtype=bool)
+    child[mask] = temp[mask]
     return child
 
 
