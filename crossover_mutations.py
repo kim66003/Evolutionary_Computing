@@ -44,12 +44,53 @@ def discrete_n_point(parent1, parent2, n):
         return np.concatenate(split_child2)
 
 
+def intermediate_single(parent1, parent2, alpha=0.5):
+    if np.random.randint(2):
+        alpha = 1 - alpha
+    # Take the mix of two parents at a single position
+    k = np.random.randint(len(parent1))
+    child = deepcopy(parent1)
+    temp = deepcopy(parent2)
+    child[k] = child[k] * alpha + temp[k] * (1 - alpha)
+    return child
+
+
+def intermediate_simple(parent1, parent2, alpha=0.5):
+    if np.random.randint(2):
+        alpha = 1 - alpha
+    # Take the mix from two parents after a position
+    k = np.random.randint(len(parent1))
+    child = deepcopy(parent1)
+    temp = deepcopy(parent2)
+    child[k:] = child[k:] * alpha + temp[k:] * (1 - alpha)
+    return child
+
+
+def intermediate_whole(parent1, parent2, alpha=0.5):
+    if np.random.randint(2):
+        alpha = 1 - alpha
+    # TODO Use deepcopy?
+    # Mix all genes from the parents to create a child
+    return parent1 * alpha + parent2 * (1 - alpha)
+
+
+def intermediate_blend(parent1, parent2, alpha=0.5):
+    if np.random.randint(2):
+        alpha = 1 - alpha
+    # Sample the new genes in a range dependant on the parents
+    d = parent2 - parent1
+    return np.array([np.random.uniform(parent1[i] - alpha * d[i],
+                                       parent1[i] + alpha * d[i])
+                     for i in range(len(d))])
+
+
 def uniform_mutation(individual, prob=0.01):
     # Randomly reset a gene to a uniformly sampled value
     mask = np.random.uniform(0, 1, len(individual))
     lower_bound, upper_bound = -1, 1
     individual = [np.random.uniform(lower_bound, upper_bound)
-                  if mask[i] < prob else ind for i, ind in enumerate(individual)]
+                  if mask[i] < prob else ind
+                  for i, ind in enumerate(individual)]
     return np.array(individual)
 
 
