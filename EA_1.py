@@ -9,8 +9,12 @@
 ######################################
 
 from selection import tournament_selection
+import sys
+sys.path.insert(0, 'evoman')
 from environment import Environment
 from demo_controller import player_controller
+from selection import *
+from crossover_mutations import *
 import os
 import sys
 
@@ -45,13 +49,46 @@ class Population():
         self.n_weights = n_weights
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
+        self.mutation_fraction = 0.2
 
         # create population
         self.pop = np.random.uniform(self.lower_bound, self.upper_bound,
                                      (self.size, self.n_weights))
 
         # calculate fitness for initial population
-        self.fitness = np.array([env.play(pcont=x)[0] for x in self.pop])
+        self.fitness = self.calc_fitness(self.pop)
+
+    def calc_fitness(self, pop):
+        return np.array([env.play(pcont=x)[0] for x in pop])
+    
+    def create_children(self, n_children, 
+                        select_method=tournament_selection, select_var=None,
+                        cross_method=intermediate_whole, cross_var=None,
+                        mutation_method=normal_mutation, mutation_var=None
+                        ):
+        # function that runs selection, crossover, mutation and returns n children
+
+        assert mutation_var is not None, "Please add variable for the mutation."
+        assert cross_var is not None, "Please add variable for the cross."
+        assert select_var is not None, "Please add variable for the mutation."
+
+        children = [] # list with children
+        
+        for i in range(n_children):
+            # select parents
+            parent1 = select_method(self, select_var)
+            parent2 = select_method(self, select_var)
+            # create child with crossover
+            child = cross_method(parent1, parent2, cross_var)
+            # mutate fraction of children
+            if np.random.binomial(n=1, p=self.mutation_fraction):
+                child = mutation_method(child, mutation_var)
+            children.append(child)
+
+        self.children = np.array(children)
+        self.children_size = n_children
+        self.children_fitness = self.calc_fitness(self.children)
+
 
     def __str__(self):
         print_class = ''
@@ -60,10 +97,13 @@ class Population():
                 str(i) + ' Fitness: ' + str(self.fitness[i]) + '\n'
         return print_class
 
-
+# initialize population
 population = Population(n_pop, n_weights)
-
-print(tournament_selection(population, 4))
+population.create_children(n_children=10, 
+                           select_method=linear_ranking, select_var=1.5,
+                           cross_method=intermediate_whole, cross_var=0.5, 
+                           mutation_method=normal_mutation, mutation_var=0.1)
+survival_selection_fitness(population)
 
 
 # Save the initial solution

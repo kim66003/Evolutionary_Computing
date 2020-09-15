@@ -12,7 +12,7 @@ import numpy as np
 from copy import deepcopy
 
 
-def discrete_uniform(parent1, parent2):
+def discrete_uniform(parent1, parent2, *_):
     # Uniformly select a gene from one of the parents
     child = deepcopy(parent1)
     temp = deepcopy(parent2)
@@ -69,7 +69,6 @@ def intermediate_simple(parent1, parent2, alpha=0.5):
 def intermediate_whole(parent1, parent2, alpha=0.5):
     if np.random.randint(2):
         alpha = 1 - alpha
-    # TODO Use deepcopy?
     # Mix all genes from the parents to create a child
     return parent1 * alpha + parent2 * (1 - alpha)
 
@@ -102,7 +101,7 @@ def normal_mutation(individual, sigma=0.1):
 if __name__ == "__main__":
     parent1 = np.array(range(10))
     parent2 = np.array(range(10, 20))
-    child = discrete_n_point(parent1, parent2, 3)
+    child = discrete_uniform(parent1, parent2)
     print(child)
 
     individual = np.full((1, 100), 100)[0]
