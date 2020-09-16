@@ -40,6 +40,7 @@ env = Environment(experiment_name=experiment_name,
 # initialize parameters
 n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
     n_hidden_neurons + (n_hidden_neurons+1)*5
+n_generations = 3
 
 
 class Population():
@@ -89,6 +90,15 @@ class Population():
         self.children_size = n_children
         self.children_fitness = self.calc_fitness(self.children)
 
+    
+    def replace_new_gen(self, new_population, new_fitness):
+        # make sure new population and fitness have same shape as old gen
+        assert new_population.shape == self.pop.shape
+        assert new_fitness.shape == self.fitness.shape
+        # replace old generation with new generation
+        self.pop = new_population
+        self.fitness = new_fitness
+
 
     def __str__(self):
         print_class = ''
@@ -99,11 +109,18 @@ class Population():
 
 # initialize population
 population = Population(n_pop, n_weights)
-population.create_children(n_children=10, 
-                           select_method=linear_ranking, select_var=1.5,
-                           cross_method=intermediate_whole, cross_var=0.5, 
-                           mutation_method=normal_mutation, mutation_var=0.1)
-survival_selection_fitness(population)
+
+# TODO loop dit
+
+for i in range(n_generations):
+    print('Generation: ', i)
+    population.create_children(n_children=10, 
+                               select_method=tournament_selection, select_var=4,
+                               cross_method=intermediate_whole, cross_var=0.5, 
+                               mutation_method=normal_mutation, mutation_var=0.1)
+    # new_fitness, new_pop = survival_selection_fitness(population)
+    new_fitness, new_pop = survival_selection_prob(population)
+    population.replace_new_gen(new_pop, new_fitness)
 
 
 # Save the initial solution

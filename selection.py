@@ -39,11 +39,35 @@ def linear_ranking(population, sp):
 
 def survival_selection_fitness(population):
     children_fitness_reshape = np.reshape(population.children_fitness, (-1, 1))
-    rank_children = [x for _, x in sorted(zip(children_fitness_reshape, 
-                                              population.children), 
-                                          key=lambda x:x[0],
-                                          reverse=True)]
-    return rank_children[:population.size]
+    new_fitness, rank_children = zip(*sorted(zip(children_fitness_reshape, 
+                                                 population.children), 
+                                             key=lambda x:x[0],
+                                             reverse=True))
+    return (np.array(new_fitness[:population.size]).flatten(), 
+            np.array(rank_children[:population.size]))
+
+
+def survival_selection_prob(population):
+    norm_fitness = norm(population.children_fitness)
+    probs = norm_fitness/np.sum(norm_fitness)
+    rank_index = np.random.choice(range(len(population.children)), 
+                                  size=population.size,
+                                  p=probs, 
+                                  replace=False)
+    rank_children = np.array(population.children[rank_index])
+    new_fitness = np.array(population.children_fitness[rank_index]).flatten()
+    return (new_fitness, rank_children)
+
+
+def norm(fitness):
+    max_fitness = max(fitness)
+    min_fitness = min(fitness)
+    if (max_fitness - min_fitness) > 0:
+        fit_norm = (fitness - min_fitness)/(max_fitness - min_fitness)
+    else:
+        fit_norm = np.zeros_like(fitness)    
+    fit_norm = [0.00000001 if val <= 0 else val for val in fit_norm]
+    return fit_norm
 
 
 if __name__ == "__main__":
@@ -56,4 +80,4 @@ if __name__ == "__main__":
             print('population: ', self.children)
             print('fitness: ', self.children_fitness)
     a = P()
-    print(survival_selection_fitness(a))
+    print(survival_selection_prob(a))
