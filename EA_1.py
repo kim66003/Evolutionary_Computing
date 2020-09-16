@@ -8,26 +8,21 @@
 #          Selma Muhammad (2578081)
 ######################################
 
-from selection import tournament_selection
 import sys
 sys.path.insert(0, 'evoman')
 from environment import Environment
+from selection import tournament_selection
 from demo_controller import player_controller
 from selection import *
 from crossover_mutations import *
 import os
-import sys
-
 import numpy as np
 
-sys.path.insert(0, 'evoman')
-
+experiment_name = "results/task1"
+os.makedirs(experiment_name, exist_ok=True)
 
 # initialize hidden neurons
 n_hidden_neurons = 10
-
-experiment_name = "test123"
-os.makedirs(experiment_name, exist_ok=True)
 
 # Enviroment
 env = Environment(experiment_name=experiment_name,
@@ -36,11 +31,6 @@ env = Environment(experiment_name=experiment_name,
                   enemymode="static",
                   level=2,
                   speed="fastest")
-
-# initialize parameters
-n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
-    n_hidden_neurons + (n_hidden_neurons+1)*5
-n_generations = 3
 
 
 class Population():
@@ -51,6 +41,7 @@ class Population():
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.mutation_fraction = 0.2
+        self.generation = 0
 
         # create population
         self.pop = np.random.uniform(self.lower_bound, self.upper_bound,
@@ -58,6 +49,11 @@ class Population():
 
         # calculate fitness for initial population
         self.fitness = self.calc_fitness(self.pop)
+
+        # best solution
+        self.best_solution = max(self.fitness)
+        # stagnation counter
+        self.stagnation_count = 0
 
     def calc_fitness(self, pop):
         return np.array([env.play(pcont=x)[0] for x in pop])
@@ -98,6 +94,29 @@ class Population():
         # replace old generation with new generation
         self.pop = new_population
         self.fitness = new_fitness
+        # update best solution
+        if max(self.fitness) > self.best_solution:
+            self.best_solution = max(self.fitness)
+        else:
+            self.stagnation_count += 1
+        self.generation += 1
+
+
+    def save_results(self, training_i, first_run=False):
+        best = np.argmax(self.fitness)
+        std  =  np.std(self.fitness)
+        mean = np.mean(self.fitness)
+
+        # saves results of this generation
+        file_results  = open(experiment_name+f'/results_enem{env.enemyn}_train{training_i}.txt','a')
+        if first_run:
+            file_results.write('gen best mean std')
+        print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
+        file_results.write('\n'+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
+        file_results.close()
+
+        # save weights
+        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}.txt',self.pop[best])
 
 
     def __str__(self):
@@ -107,21 +126,42 @@ class Population():
                 str(i) + ' Fitness: ' + str(self.fitness[i]) + '\n'
         return print_class
 
-# initialize population
-population = Population(n_pop, n_weights)
 
-# TODO loop dit
+def simulate(training_i, n_pop, n_weights, n_children, n_generations, 
+             stagnation_point=10):
+    # initialize population
+    population = Population(n_pop, n_weights)
 
-for i in range(n_generations):
-    print('Generation: ', i)
-    population.create_children(n_children=10, 
-                               select_method=tournament_selection, select_var=4,
-                               cross_method=intermediate_whole, cross_var=0.5, 
-                               mutation_method=normal_mutation, mutation_var=0.1)
-    # new_fitness, new_pop = survival_selection_fitness(population)
-    new_fitness, new_pop = survival_selection_prob(population)
-    population.replace_new_gen(new_pop, new_fitness)
+    # saves results for first pop
+    population.save_results(training_i, first_run=True)
 
+    for i in range(n_generations):
+        print('Generation: ', i+1)
+        mutation_multiple = 1
+        # if population fitness stagnates, increase mutation probability
+        if population.stagnation_count > stagnation_point:
+            print('population has stagnated')
+            mutation_multiple = 10
+            population.stagnation_count = 0
+        population.create_children(n_children=n_children, 
+                                select_method=tournament_selection, select_var=5,
+                                cross_method=intermediate_whole, cross_var=0.5, 
+                                mutation_method=normal_mutation, mutation_var=mutation_multiple*0.1)
+        # new_fitness, new_pop = survival_selection_fitness(population)
+        new_fitness, new_pop = survival_selection_prob(population)
+        population.replace_new_gen(new_pop, new_fitness)
+        # save results for every generation
+        population.save_results(training_i)
 
-# Save the initial solution
-env.update_solutions([population.pop, population.fitness])
+if __name__ == "__main__":
+    # initialize number of trainings
+    n_training = 10
+    # initialize parameters
+    n_pop, n_weights = 100, (env.get_num_sensors()+1) * \
+        n_hidden_neurons + (n_hidden_neurons+1)*5
+    n_generations = 30
+
+    n_children = 300
+
+    for i in range(n_training):
+        simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations)

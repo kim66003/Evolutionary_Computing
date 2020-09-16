@@ -60,6 +60,7 @@ def survival_selection_prob(population):
 
 
 def norm(fitness):
+    # helpers function for survival selection with probabilities
     max_fitness = max(fitness)
     min_fitness = min(fitness)
     if (max_fitness - min_fitness) > 0:
@@ -68,6 +69,11 @@ def norm(fitness):
         fit_norm = np.zeros_like(fitness)    
     fit_norm = [0.00000001 if val <= 0 else val for val in fit_norm]
     return fit_norm
+
+
+def doomsday(population):
+    
+    pass
 
 
 if __name__ == "__main__":
