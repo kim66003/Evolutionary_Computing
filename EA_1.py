@@ -18,23 +18,26 @@ from crossover_mutations import *
 import os
 import numpy as np
 
-if len(sys.argv) > 3:
-    # environment settings
-    if sys.argv[1] in range(0, 4):
-        enemy_no = sys.argv[1]
+
+# environment settings
+enemy_no = 2
+mutation_method = normal_mutation
+mutation_var = 0.1
+
+
+# sys args
+if sys.argv[1]:
+    enemy_no = sys.argv[1]
+if sys.argv[2]:
     if sys.argv[2] == 'normal':
         mutation_method = normal_mutation
         mutation_var = 0.1
     elif sys.argv[2] == 'uniform':
         mutation_method = uniform_mutation
         mutation_var = 0.01
-    if len(sys.argv) == 4:
-        if sys.argv[3] == 'linux':
-            os.environ["SDL_VIDEODRIVER"] = "dummy"
-else:
-    enemy_no = 2
-    mutation_method = normal_mutation
-    mutation_var = 0.1
+if sys.argv[3]:
+    if sys.argv[3] == 'linux':
+        os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 
 experiment_name = "results/task1"
