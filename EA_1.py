@@ -38,6 +38,9 @@ if len(sys.argv) > 2:
         if sys.argv[3]:
             if sys.argv[3] == 'linux':
                 os.environ["SDL_VIDEODRIVER"] = "dummy"
+else:
+    print("arg1: enemy_no, arg2: normal/uniform, arg3: linux (optional if running in terminal)")
+    print("so like this: python EA_1.py 1 normal linux\n or: python EA_1.py 2 uniform")
 
 
 experiment_name = "results/task1"
