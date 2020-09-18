@@ -55,7 +55,7 @@ env = Environment(experiment_name=experiment_name,
                   enemymode="static",
                   level=2,
                   speed="fastest",
-                  logs="on")
+                  logs="off")
 
 
 class Population():
