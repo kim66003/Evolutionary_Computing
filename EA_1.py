@@ -18,7 +18,7 @@ from crossover_mutations import *
 import os
 import numpy as np
 
-if sys.argv[1] == 'linux':
+if len(sys.argv) > 1 and sys.argv[1] == 'linux':
     os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 experiment_name = "results/task1"
