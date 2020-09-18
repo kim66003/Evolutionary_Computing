@@ -27,9 +27,14 @@ os.makedirs(experiment_name, exist_ok=True)
 # initialize hidden neurons
 n_hidden_neurons = 10
 
+# environment settings
+enemy_no = [1]
+mutation_method = normal_mutation
+mutation_var = 0.1
+
 # Enviroment
 env = Environment(experiment_name=experiment_name,
-                  enemies=[2],
+                  enemies=enemy_no,
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
                   level=2,
@@ -151,7 +156,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
                                 cross_method=intermediate_whole, cross_var=0.5, 
-                                mutation_method=normal_mutation, mutation_var=mutation_multiple*0.1)
+                                mutation_method=mutation_method, mutation_var=mutation_multiple*mutation_var)
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
         new_fitness, new_pop = survival_selection_prob(population)
