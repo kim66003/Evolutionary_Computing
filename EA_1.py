@@ -40,12 +40,8 @@ if len(sys.argv) > 3:
         if sys.argv[4] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
 else:
-    print("arg1: enemy_no (1, 2, 3), arg2: normal/uniform (mutation), arg3: on/off (prints)\
-            arg4: ssh (optional if running in terminal)")
-    print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n\
-             or: python EA_1.py 3 uniform on")
-
-print(len(sys.argv))
+    print("arg1: enemy_no (1, 2, 3), arg2: normal/uniform (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
+    print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
 
 
 experiment_name = "results/task1"
