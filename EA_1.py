@@ -17,9 +17,9 @@ from selection import *
 from crossover_mutations import *
 import os
 import numpy as np
-import pygame
-pygame.init()
-pygame.display.list_modes()
+
+if sys.argv[1] == 'linux':
+    os.environ["SDL_VIDEODRIVER"] = "dummy"
 
 experiment_name = "results/task1"
 os.makedirs(experiment_name, exist_ok=True)
