@@ -116,7 +116,7 @@ class Population():
         file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}.txt',self.pop[best])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}.txt',self.pop[best])
 
 
     def __str__(self):
@@ -128,7 +128,7 @@ class Population():
 
 
 def simulate(training_i, n_pop, n_weights, n_children, n_generations, 
-             stagnation_point=10):
+             stagnation_point=5):
     # initialize population
     population = Population(n_pop, n_weights)
 
@@ -137,19 +137,30 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
 
     for i in range(n_generations):
         print('Generation: ', i+1)
-        mutation_multiple = 1
+
         # if population fitness stagnates, increase mutation probability
+        mutation_multiple = 1
         if population.stagnation_count > stagnation_point:
             print('population has stagnated')
             mutation_multiple = 10
             population.stagnation_count = 0
+
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
                                 cross_method=intermediate_whole, cross_var=0.5, 
                                 mutation_method=normal_mutation, mutation_var=mutation_multiple*0.1)
+                                
         # new_fitness, new_pop = survival_selection_fitness(population)
         new_fitness, new_pop = survival_selection_prob(population)
+        
+        #Always let the best of the previous population advance to the next generation
+        best = np.argmax(population.fitness)
+        new_pop[-1] = population.pop[best]
+        new_fitness[-1] = population.fitness[best]
+        
+        #Replace the population by its children
         population.replace_new_gen(new_pop, new_fitness)
+        
         # save results for every generation
         population.save_results(training_i)
 
@@ -161,7 +172,7 @@ if __name__ == "__main__":
         n_hidden_neurons + (n_hidden_neurons+1)*5
     n_generations = 30
 
-    n_children = 300
+    n_children = 200
 
     for i in range(n_training):
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations)
