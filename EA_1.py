@@ -26,7 +26,7 @@ mutation_var = 0.1
 
 
 # sys args
-if len(sys.argv) > 2:
+if len(sys.argv) > 4:
     enemy_no = sys.argv[1]
     if sys.argv[2] == 'normal':
         mutation_method = normal_mutation
@@ -34,12 +34,16 @@ if len(sys.argv) > 2:
     elif sys.argv[2] == 'uniform':
         mutation_method = uniform_mutation
         mutation_var = 0.01
-    if len(sys.argv) > 3:
-        if sys.argv[3] == 'ssh':
+    if sys.argv[3] in ["on", "off"]:
+        logs = sys.argv[3]
+    if len(sys.argv) > 5:
+        if sys.argv[4] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
 else:
-    print("arg1: enemy_no, arg2: normal/uniform, arg3: linux (optional if running in terminal)")
-    print("so like this: python EA_1.py 1 normal linux\n or: python EA_1.py 2 uniform")
+    print("arg1: enemy_no (1, 2, 3), arg2: normal/uniform (mutation), arg3: on/off (prints)\
+            arg4: ssh (optional if running in terminal)")
+    print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n\
+             or: python EA_1.py 3 uniform on")
 
 
 experiment_name = "results/task1"
