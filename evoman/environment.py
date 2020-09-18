@@ -117,12 +117,12 @@ class Environment(object):
         if self.fullscreen:
             flags =  DOUBLEBUF  |  FULLSCREEN
             
-        # self.screen = pygame.display.set_mode((736, 512), flags)
+        self.screen = pygame.display.set_mode((736, 512), flags)
 
-        # self.screen.set_alpha(None) # disables uneeded alpha
-        # pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP]) # enables only needed events
+        self.screen.set_alpha(None) # disables uneeded alpha
+        pygame.event.set_allowed([QUIT, KEYDOWN, KEYUP]) # enables only needed events
 
-        # self.load_sprites()
+        self.load_sprites()
 
 
 
