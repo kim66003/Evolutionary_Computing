@@ -23,6 +23,7 @@ import numpy as np
 enemy_no = 2
 mutation_method = normal_mutation
 mutation_var = 0.1
+print("STANDARD SETTINGS:\nenemy: 2\nmutation: normal\nmutation_var=0.1")
 
 
 # sys args
@@ -40,8 +41,9 @@ if len(sys.argv) > 3:
         if sys.argv[4] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
 else:
-    print("arg1: enemy_no (1, 2, 3), arg2: normal/uniform (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
+    print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
     print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
+    sys.exit(1)
 
 
 experiment_name = "results/task1"
@@ -129,13 +131,13 @@ class Population():
         self.generation += 1
 
 
-    def save_results(self, training_i, first_run=False):
+    def save_results(self, training_i, mutation, first_run=False):
         best = np.argmax(self.fitness)
         std  =  np.std(self.fitness)
         mean = np.mean(self.fitness)
 
         # saves results of this generation
-        file_results  = open(experiment_name+f'/results_enem{env.enemyn}_train{training_i}.txt','a')
+        file_results  = open(experiment_name+f'/results_enem{env.enemyn}_train{training_i}_mut{mutation}.txt','a')
         if first_run:
             file_results.write('gen best mean std')
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
@@ -143,7 +145,7 @@ class Population():
         file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}.txt',self.pop[best])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}_mut{mutation}.txt',self.pop[best])
 
 
     def __str__(self):
@@ -154,13 +156,13 @@ class Population():
         return print_class
 
 
-def simulate(training_i, n_pop, n_weights, n_children, n_generations, 
+def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_type,
              stagnation_point=5):
     # initialize population
     population = Population(n_pop, n_weights)
 
     # saves results for first pop
-    population.save_results(training_i, first_run=True)
+    population.save_results(training_i, mutation_type, first_run=True)
 
     for i in range(n_generations):
         print('Generation: ', i+1)
@@ -189,7 +191,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         population.replace_new_gen(new_pop, new_fitness)
         
         # save results for every generation
-        population.save_results(training_i)
+        population.save_results(training_i, mutation_type)
 
 if __name__ == "__main__":
     # initialize number of trainings
@@ -203,4 +205,4 @@ if __name__ == "__main__":
 
     for i in range(n_training):
         print('Training iteration: ', i)
-        simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations)
+        simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, mutation_type=sys.argv[2])
