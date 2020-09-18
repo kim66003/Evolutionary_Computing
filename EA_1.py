@@ -35,7 +35,7 @@ if len(sys.argv) > 2:
         mutation_method = uniform_mutation
         mutation_var = 0.01
     if len(sys.argv) > 3:
-        if sys.argv[3] == 'linux':
+        if sys.argv[3] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
 else:
     print("arg1: enemy_no, arg2: normal/uniform, arg3: linux (optional if running in terminal)")
