@@ -17,6 +17,9 @@ from selection import *
 from crossover_mutations import *
 import os
 import numpy as np
+import pygame
+pygame.init()
+pygame.display.list_modes()
 
 experiment_name = "results/task1"
 os.makedirs(experiment_name, exist_ok=True)
