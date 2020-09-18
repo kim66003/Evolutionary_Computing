@@ -18,8 +18,24 @@ from crossover_mutations import *
 import os
 import numpy as np
 
-if len(sys.argv) > 1 and sys.argv[1] == 'linux':
-    os.environ["SDL_VIDEODRIVER"] = "dummy"
+if len(sys.argv) > 3:
+    # environment settings
+    if sys.argv[1] in range(0, 4):
+        enemy_no = sys.argv[1]
+    if sys.argv[2] == 'normal':
+        mutation_method = normal_mutation
+        mutation_var = 0.1
+    elif sys.argv[2] == 'uniform':
+        mutation_method = uniform_mutation
+        mutation_var = 0.01
+    if len(sys.argv) == 4:
+        if sys.argv[3] == 'linux':
+            os.environ["SDL_VIDEODRIVER"] = "dummy"
+else:
+    enemy_no = 2
+    mutation_method = normal_mutation
+    mutation_var = 0.1
+
 
 experiment_name = "results/task1"
 os.makedirs(experiment_name, exist_ok=True)
@@ -27,14 +43,9 @@ os.makedirs(experiment_name, exist_ok=True)
 # initialize hidden neurons
 n_hidden_neurons = 10
 
-# environment settings
-enemy_no = [1]
-mutation_method = normal_mutation
-mutation_var = 0.1
-
 # Enviroment
 env = Environment(experiment_name=experiment_name,
-                  enemies=enemy_no,
+                  enemies=[enemy_no],
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
                   level=2,

@@ -84,6 +84,7 @@ def intermediate_blend(parent1, parent2, alpha=0.5):
 
 
 def uniform_mutation(individual, prob=0.01):
+    print('uniform')
     # Randomly reset a gene to a uniformly sampled value
     mask = np.random.uniform(0, 1, len(individual))
     lower_bound, upper_bound = -1, 1
@@ -94,6 +95,7 @@ def uniform_mutation(individual, prob=0.01):
 
 
 def normal_mutation(individual, sigma=0.1):
+    print('normal')
     # Add Gaussian noise to all genes
     return individual + np.random.normal(0, sigma, size=len(individual))
 
