@@ -108,7 +108,7 @@ class Population():
         mean = np.mean(self.fitness)
 
         # saves results of this generation
-        file_results  = open(experiment_name+f'/results_enem{env.enemyn}_train{training_i}.txt','a')
+        file_results  = open(experiment_name+f'/results_enemy{env.enemyn}_train{training_i}.txt','a')
         if first_run:
             file_results.write('gen best mean std')
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
