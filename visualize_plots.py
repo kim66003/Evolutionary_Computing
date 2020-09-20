@@ -36,12 +36,12 @@ def line_plot(results):
         lower_bound_avg = mean_average - std_average
         upper_bound_avg = mean_average + std_average
 
-        plt.plot(mean_best)
-        plt.plot(mean_average)
+        plt.plot(mean_best, color='blue')
+        plt.plot(mean_average, color='purple')
         plt.xlabel('Generations')
         plt.ylabel('Fitness')
-        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3)    
-        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3)
+        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color='blue')    
+        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color='purple')
 
 
     plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'])
