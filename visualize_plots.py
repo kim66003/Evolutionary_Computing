@@ -29,19 +29,20 @@ def preprocess_results(results):
 
 
 def line_plot(results):
-    for result in results:
+    colors = ['blue', 'green']
+    for i, result in enumerate(results):
         mean_best, std_best, mean_average, std_average = result
         lower_bound_best = mean_best - std_best
         upper_bound_best = mean_best + std_best
         lower_bound_avg = mean_average - std_average
         upper_bound_avg = mean_average + std_average
 
-        plt.plot(mean_best, color='blue')
-        plt.plot(mean_average, color='purple')
+        plt.plot(mean_best, color=colors[i])
+        plt.plot(mean_average, color='dark'+colors[i])
         plt.xlabel('Generations')
         plt.ylabel('Fitness')
-        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color='blue')    
-        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color='purple')
+        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i])    
+        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color='dark'+colors[i])
 
 
     plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'])
