@@ -20,13 +20,6 @@ import numpy as np
 
 
 # environment settings
-enemy_no = 2
-mutation_method = normal_mutation
-mutation_var = 0.1
-print("STANDARD SETTINGS:\nenemy: 2\nmutation: normal\nmutation_var=0.1")
-
-
-# sys args
 if len(sys.argv) > 3:
     enemy_no = sys.argv[1]
     if sys.argv[2] == 'normal':
@@ -40,6 +33,7 @@ if len(sys.argv) > 3:
     if len(sys.argv) > 4:
         if sys.argv[4] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
+    print("Parameter SETTINGS:\nenemy: {}\nmutation: {}\nmutation_var={}".format(enemy_no, mutation_method, mutation_var))
 else:
     print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
     print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
