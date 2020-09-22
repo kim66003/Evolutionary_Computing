@@ -171,11 +171,20 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_t
             print('population has stagnated')
             mutation_multiple = 10
             population.stagnation_count = 0
+            # change mutation method and var if population stagnated
+            if mutation_type == "none":
+                mutation_method = normal_mutation
+                mutation_var = 0.1
 
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
                                 cross_method=intermediate_whole, cross_var=0.5, 
                                 mutation_method=mutation_method, mutation_var=mutation_multiple*mutation_var)
+        
+        if mutation_type == "none":
+            # change mutation method and var back to none
+            mutation_method = mutation_type
+            mutation_var = 0
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
         new_fitness, new_pop = survival_selection_prob(population)
