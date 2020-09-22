@@ -58,16 +58,76 @@ def line_plot(results, enemy):
     plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'], fontsize='x-large')
     plt.savefig('results/plots/lineplot_enemy{}'.format(enemy))
     plt.show()
-    
+
+
+# function for setting the colors of the box plots pairs
+def setBoxColors(bp):
+    print(bp['boxes'], bp['caps'], bp['whiskers'], bp('fliers'), bp['medians'])
+    plt.setp(bp['boxes'][0], color='blue')
+    plt.setp(bp['caps'][0], color='blue')
+    plt.setp(bp['caps'][1], color='blue')
+    plt.setp(bp['whiskers'][0], color='blue')
+    plt.setp(bp['whiskers'][1], color='blue')
+    plt.setp(bp['fliers'][0], color='blue')
+    plt.setp(bp['fliers'][1], color='blue')
+    plt.setp(bp['medians'][0], color='blue')
+
+    plt.setp(bp['boxes'][1], color='red')
+    plt.setp(bp['caps'][2], color='red')
+    plt.setp(bp['caps'][3], color='red')
+    plt.setp(bp['whiskers'][2], color='red')
+    plt.setp(bp['whiskers'][3], color='red')
+    plt.setp(bp['fliers'][2], color='red')
+    plt.setp(bp['fliers'][3], color='red')
+    plt.setp(bp['medians'][1], color='red')
+
+def boxplot(results_en1, results_en2):
+    A = [[1, 2, 5,],  [7, 2]]
+    B = [[5, 7, 2, 2, 5], [7, 2, 5]]
+    C = [[3,2,5,7], [6, 7, 3]]
+
+    fig = plt.figure()
+    ax = plt.axes()
+
+    # first boxplot pair
+    bp = plt.boxplot(A, positions = [1, 2], widths = 0.6)
+    # setBoxColors(bp)
+
+    # second boxplot pair
+    bp = plt.boxplot(B, positions = [4, 5], widths = 0.6)
+    # setBoxColors(bp)
+
+    # thrid boxplot pair
+    bp = plt.boxplot(C, positions = [7, 8], widths = 0.6)
+    # setBoxColors(bp)
+
+    # set axes limits and labels
+    plt.xlim(0,9)
+    plt.ylim(0,9)
+    ax.set_xticklabels(['Enemy 1', 'Enemy 2', 'Enemy 3'])
+    ax.set_xticks([1.5, 4.5, 7.5])
+
+    # draw temporary red and blue lines and use them to create a legend
+    hB, = plt.plot([1,1],'b-')
+    hR, = plt.plot([1,1],'r-')
+    plt.legend((hB, hR),('EA 1', 'EA 2'))
+    hB.set_visible(False)
+    hR.set_visible(False)
+
+    plt.show()
 
 
 if __name__ == "__main__":
-    enemy = 3
-    # results enemy 1 mutation normal
-    results_files_1 = load_files('results/task1/', enemy, 'uniform')
-    results_1 = preprocess_results(results_files_1)
-    # results enemy 2 mutation normal
-    results_files_2 = load_files('results/task1/', enemy, 'normal')
-    results_2 = preprocess_results(results_files_2)
+    # enemy = 3
+    # # results enemy 1 mutation normal
+    # results_files_1 = load_files('results/task1/', enemy, 'uniform')
+    # results_1 = preprocess_results(results_files_1)
+    # # results enemy 2 mutation normal
+    # results_files_2 = load_files('results/task1/', enemy, 'normal')
+    # results_2 = preprocess_results(results_files_2)
     
-    line_plot([results_1, results_2], enemy=enemy)
+    # line_plot([results_1, results_2], enemy=enemy)
+    best_sol_path = 'results/best_solutions/'
+    results_gain_uniform = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutuniform')
+    results_gain_normal = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutnormal')
+    boxplot(results_gain_uniform, results_gain_normal)
