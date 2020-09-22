@@ -1,3 +1,13 @@
+######################################
+# visualize_plots.py
+# Evolutionary Computing Task I
+# VU 2020
+# Authors: Stefan Klut (2686873)
+#          Kimberley Boersma (2572145)
+#          Timo van Milligen (2684444)
+#          Selma Muhammad (2578081)
+######################################
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -52,10 +62,10 @@ def line_plot(results):
 
 if __name__ == "__main__":
     # results enemy 1 mutation normal
-    results_files_1 = load_files('results/task1/', 1, 'normal')
+    results_files_1 = load_files('results/task1/', 3, 'uniform')
     results_1 = preprocess_results(results_files_1)
     # results enemy 2 mutation normal
-    results_files_2 = load_files('results/task1/', 2, 'normal')
+    results_files_2 = load_files('results/task1/', 3, 'normal')
     results_2 = preprocess_results(results_files_2)
     
     line_plot([results_1, results_2])
