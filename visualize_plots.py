@@ -55,14 +55,14 @@ def line_plot(results, enemy):
         plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color=colors[i*2+1])
 
 
-    plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'])
+    plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'], fontsize='x-large')
     plt.savefig('results/plots/lineplot_enemy{}'.format(enemy))
     plt.show()
     
 
 
 if __name__ == "__main__":
-    enemy = 1
+    enemy = 3
     # results enemy 1 mutation normal
     results_files_1 = load_files('results/task1/', enemy, 'uniform')
     results_1 = preprocess_results(results_files_1)
