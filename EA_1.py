@@ -173,8 +173,8 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_t
             population.stagnation_count = 0
             # change mutation method and var if population stagnated
             if mutation_type == "none":
-                mutation_method = normal_mutation
-                mutation_var = 0.1
+                mutation_method = uniform_mutation
+                mutation_var = 0.01
 
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
