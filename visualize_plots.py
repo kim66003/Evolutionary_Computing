@@ -38,8 +38,8 @@ def preprocess_results(results):
     return mean_best, std_best, mean_average, std_average
 
 
-def line_plot(results):
-    colors = ['blue', 'green']
+def line_plot(results, enemy):
+    colors = ['cyan', 'blue', 'magenta', 'purple']
     for i, result in enumerate(results):
         mean_best, std_best, mean_average, std_average = result
         lower_bound_best = mean_best - std_best
@@ -47,25 +47,27 @@ def line_plot(results):
         lower_bound_avg = mean_average - std_average
         upper_bound_avg = mean_average + std_average
 
-        plt.plot(mean_best, color=colors[i])
-        plt.plot(mean_average, color='dark'+colors[i])
+        plt.plot(mean_best, color=colors[i*2], linestyle='dashed')
+        plt.plot(mean_average, color=colors[i*2+1])
         plt.xlabel('Generations')
         plt.ylabel('Fitness')
-        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i])    
-        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color='dark'+colors[i])
+        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i*2])    
+        plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color=colors[i*2+1])
 
 
     plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'])
+    plt.savefig('results/plots/lineplot_enemy{}'.format(enemy))
     plt.show()
-
+    
 
 
 if __name__ == "__main__":
+    enemy = 1
     # results enemy 1 mutation normal
-    results_files_1 = load_files('results/task1/', 3, 'uniform')
+    results_files_1 = load_files('results/task1/', enemy, 'uniform')
     results_1 = preprocess_results(results_files_1)
     # results enemy 2 mutation normal
-    results_files_2 = load_files('results/task1/', 3, 'normal')
+    results_files_2 = load_files('results/task1/', enemy, 'normal')
     results_2 = preprocess_results(results_files_2)
     
-    line_plot([results_1, results_2])
+    line_plot([results_1, results_2], enemy=enemy)
