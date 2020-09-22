@@ -28,6 +28,9 @@ if len(sys.argv) > 3:
     elif sys.argv[2] == 'uniform':
         mutation_method = uniform_mutation
         mutation_var = 0.01
+    elif sys.argv[2] == 'none':
+        mutation_method = sys.argv[2]
+        mutation_var = 0
     if sys.argv[3] in ["on", "off"]:
         logs = sys.argv[3]
     if len(sys.argv) > 4:
@@ -35,7 +38,7 @@ if len(sys.argv) > 3:
             os.environ["SDL_VIDEODRIVER"] = "dummy"
     print("Parameter SETTINGS:\nenemy: {}\nmutation: {}\nmutation_var={}".format(enemy_no, mutation_method, mutation_var))
 else:
-    print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
+    print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform/none (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
     print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
     sys.exit(1)
 
@@ -100,9 +103,10 @@ class Population():
             parent2 = select_method(self, select_var)
             # create child with crossover
             child = cross_method(parent1, parent2, cross_var)
-            # mutate fraction of children
-            if np.random.binomial(n=1, p=self.mutation_fraction):
-                child = mutation_method(child, mutation_var)
+            if not mutation_method == "none":
+                # mutate fraction of children
+                if np.random.binomial(n=1, p=self.mutation_fraction):
+                    child = mutation_method(child, mutation_var)
             children.append(child)
 
         self.children = np.array(children)
