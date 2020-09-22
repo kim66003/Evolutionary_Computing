@@ -79,7 +79,7 @@ def intermediate_blend(parent1, parent2, alpha=0.5):
     # Sample the new genes in a range dependant on the parents
     d = parent2 - parent1
     return np.array([np.random.uniform(parent1[i] - alpha * d[i],
-                                       parent1[i] + alpha * d[i])
+                                       parent2[i] + alpha * d[i])
                      for i in range(len(d))])
 
 

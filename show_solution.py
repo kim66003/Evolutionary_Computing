@@ -34,7 +34,7 @@ mutations = ['uniform','normal']
 
 for mutation in mutations:
 	# tests saved demo solutions for each enemy
-    for enemy in range (3,4):
+    for enemy in range (1,2):
         gains = []
         for train in range(0, 10):
             mean_indv_gain = []
