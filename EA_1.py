@@ -172,19 +172,19 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_t
             mutation_multiple = 10
             population.stagnation_count = 0
             # change mutation method and var if population stagnated
-            if mutation_type == "none":
-                mut_method = uniform_mutation
-                mut_var = 0.01
+            # if mutation_type == "none":
+            #     mut_method = uniform_mutation
+            #     mut_var = 0.01
 
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
                                 cross_method=intermediate_whole, cross_var=0.5, 
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var)
         
-        if mutation_type == "none":
-            # change mutation method and var back to none
-            mut_method = mutation_type
-            mut_var = 0
+        # if mutation_type == "none":
+        #     # change mutation method and var back to none
+        #     mut_method = mutation_type
+        #     mut_var = 0
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
         new_fitness, new_pop = survival_selection_prob(population)
@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     n_children = 200
 
-    for i in range(n_training):
+    for i in [9]:#range(n_training):
         print('Training iteration: ', i)
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
         mutation_type=sys.argv[2], mut_method=mutation_method, mut_var=mutation_var)
