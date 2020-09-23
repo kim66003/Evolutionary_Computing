@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     n_children = 200
 
-    for i in [9]:#range(n_training):
+    for i in range(n_training):
         print('Training iteration: ', i)
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
         mutation_type=sys.argv[2], mut_method=mutation_method, mut_var=mutation_var)
