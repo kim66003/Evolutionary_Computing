@@ -54,32 +54,15 @@ def line_plot(results, enemy):
         plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i*2])    
         plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color=colors[i*2+1])
 
-
-    plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'], fontsize='x-large')
-    plt.savefig('results/plots/lineplot_enemy{}'.format(enemy))
+    if len(results) == 2:
+        plt.legend(['EA1: mean best solution', 'EA1: mean average solution', 'EA2: mean best solution', 'EA2: mean average solution'], fontsize='x-large')
+        plt.savefig('results/plots/lineplot_enemy{}'.format(enemy))
+    elif len(results) == 1:
+        plt.legend(['EA3: mean best solution', 'EA3: mean average solution'], fontsize='x-large')
+        plt.savefig('results/plots/lineplot_enemy{}_doomsday'.format(enemy))
     plt.show()
 
 
-# function for setting the colors of the box plots pairs
-def setBoxColors(bp):
-    print(bp['boxes'], bp['caps'], bp['whiskers'], bp('fliers'), bp['medians'])
-    plt.setp(bp['boxes'][0], color='blue')
-    plt.setp(bp['caps'][0], color='blue')
-    plt.setp(bp['caps'][1], color='blue')
-    plt.setp(bp['whiskers'][0], color='blue')
-    plt.setp(bp['whiskers'][1], color='blue')
-    plt.setp(bp['fliers'][0], color='blue')
-    plt.setp(bp['fliers'][1], color='blue')
-    plt.setp(bp['medians'][0], color='blue')
-
-    plt.setp(bp['boxes'][1], color='red')
-    plt.setp(bp['caps'][2], color='red')
-    plt.setp(bp['caps'][3], color='red')
-    plt.setp(bp['whiskers'][2], color='red')
-    plt.setp(bp['whiskers'][3], color='red')
-    plt.setp(bp['fliers'][2], color='red')
-    plt.setp(bp['fliers'][3], color='red')
-    plt.setp(bp['medians'][1], color='red')
 
 def boxplot(results_en1, results_en2):
     A = [[1, 2, 5,],  [7, 2]]
@@ -125,8 +108,10 @@ if __name__ == "__main__":
     # results enemy 2 mutation normal
     results_files_2 = load_files('results/task1/', enemy, 'normal')
     results_2 = preprocess_results(results_files_2)
+    results_files_3 = load_files('results/task1/', enemy, 'doomsday')
+    results_3 = preprocess_results(results_files_3)
     
-    line_plot([results_1, results_2], enemy=enemy)
+    line_plot([results_3], enemy=enemy)
     # best_sol_path = 'results/best_solutions/'
     # results_gain_uniform = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutuniform')
     # results_gain_normal = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutnormal')
