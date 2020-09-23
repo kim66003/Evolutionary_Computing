@@ -118,16 +118,16 @@ def boxplot(results_en1, results_en2):
 
 
 if __name__ == "__main__":
-    # enemy = 3
-    # # results enemy 1 mutation normal
-    # results_files_1 = load_files('results/task1/', enemy, 'uniform')
-    # results_1 = preprocess_results(results_files_1)
-    # # results enemy 2 mutation normal
-    # results_files_2 = load_files('results/task1/', enemy, 'normal')
-    # results_2 = preprocess_results(results_files_2)
+    enemy = 2
+    # results enemy 1 mutation normal
+    results_files_1 = load_files('results/task1/', enemy, 'uniform')
+    results_1 = preprocess_results(results_files_1)
+    # results enemy 2 mutation normal
+    results_files_2 = load_files('results/task1/', enemy, 'normal')
+    results_2 = preprocess_results(results_files_2)
     
-    # line_plot([results_1, results_2], enemy=enemy)
-    best_sol_path = 'results/best_solutions/'
-    results_gain_uniform = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutuniform')
-    results_gain_normal = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutnormal')
-    boxplot(results_gain_uniform, results_gain_normal)
+    line_plot([results_1, results_2], enemy=enemy)
+    # best_sol_path = 'results/best_solutions/'
+    # results_gain_uniform = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutuniform')
+    # results_gain_normal = np.loadtxt(best_sol_path+'individual_gain_enemy3_mutnormal')
+    # boxplot(results_gain_uniform, results_gain_normal)
