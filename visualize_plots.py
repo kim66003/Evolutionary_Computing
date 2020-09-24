@@ -64,7 +64,7 @@ def line_plot(results, enemy):
 
 
 if __name__ == "__main__":
-    enemy = 3
+    enemy = 2
     # results mutation uniform
     # results_files_1 = load_files('results/task1/', enemy, 'uniform')
     # results_1 = preprocess_results(results_files_1)
