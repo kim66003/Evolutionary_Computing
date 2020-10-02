@@ -9,6 +9,7 @@
 ######################################
 
 import numpy as np
+import scipy.spatial
 
 
 def tournament_selection(population, k):
@@ -70,12 +71,6 @@ def norm(fitness):
     fit_norm = [0.00000001 if val <= 0 else val for val in fit_norm]
     return fit_norm
 
-
-def doomsday(population):
-    
-    pass
-
-
 if __name__ == "__main__":
     class P():
         def __init__(self):
@@ -86,4 +81,4 @@ if __name__ == "__main__":
             print('population: ', self.children)
             print('fitness: ', self.children_fitness)
     a = P()
-    print(survival_selection_prob(a))
+    print(distance(a.children))

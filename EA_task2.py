@@ -61,13 +61,14 @@ env = Environment(experiment_name=experiment_name,
 
 class Population():
     # initialize population class
-    def __init__(self, size, n_weights, lower_bound=-1, upper_bound=1):
+    def __init__(self, size, n_weights, lower_bound=-1, upper_bound=1, sharing=False):
         self.size = size
         self.n_weights = n_weights
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         self.mutation_fraction = 0.2
         self.generation = 0
+        self.sharing = sharing
 
         # create population
         self.pop = np.random.uniform(self.lower_bound, self.upper_bound,
@@ -80,9 +81,25 @@ class Population():
         self.best_solution = max(self.fitness)
         # stagnation counter
         self.stagnation_count = 0
+    
+    def distance(self, pop, metric='euclidean'):
+        distance = scipy.spatial.distance.pdist(pop, metric=metric)
+        distance_matrix = scipy.spatial.distance.squareform(distance)
+        return distance_matrix
 
+    def fitness_sharing(self, distance_matrix, fitness, sigma=None):
+        denom = np.array([np.sum(0 if i < sigma else (1 - (i / sigma)) for i in l) 
+                          for l in distance_matrix])
+        return (fitness / denom)
+        
     def calc_fitness(self, pop):
-        return np.array([env.play(pcont=x)[0] for x in pop])
+        fitness = np.array([env.play(pcont=x)[0] for x in pop])
+        if self.sharing:
+            distance_matrix = self.distance(pop)
+            print('distance matrix: ', distance_matrix)
+            return self.fitness_sharing(distance_matrix, fitness,sigma = 2)
+        else:
+            return fitness
     
     def create_children(self, n_children, 
                         select_method=tournament_selection, select_var=None,
@@ -171,20 +188,11 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_t
             print('population has stagnated')
             mutation_multiple = 10
             population.stagnation_count = 0
-            # change mutation method and var if population stagnated
-            # if mutation_type == "none":
-            #     mut_method = uniform_mutation
-            #     mut_var = 0.01
 
         population.create_children(n_children=n_children, 
                                 select_method=tournament_selection, select_var=5,
                                 cross_method=intermediate_whole, cross_var=0.5, 
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var)
-        
-        # if mutation_type == "none":
-        #     # change mutation method and var back to none
-        #     mut_method = mutation_type
-        #     mut_var = 0
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
         new_fitness, new_pop = survival_selection_prob(population)
