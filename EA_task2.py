@@ -27,6 +27,7 @@ if len(sys.argv) > 5:
         crossover_method = discrete_uniform
     elif sys.argv[2] == 'discrete_n_point':
         crossover_method = discrete_n_point
+        crossover_var = 2
     elif sys.argv[2] == 'intermediate_single':
         crossover_method = intermediate_single
     elif sys.argv[2] == 'intermediate_whole':
@@ -62,7 +63,7 @@ if len(sys.argv) > 5:
     print("Parameter SETTINGS: enemies: {}\ncrossover: {}\nselection: {}\nselection_survival: {}\nmutation: {}\nmutation_var={}".format(enemies, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], mutation_var))
 else:
     print("arg1: enemy_no1enemy_no2enemy_no3, arg2: crossover type, arg3: selection type, arg4: survival selection, arg5: normal/uniform (mutation), arg6: on/off (prints) arg7: ssh (optional if running in terminal)")
-    print("so like this: python EA_task2.py 123 intermediate_blend tournament survival_selection_fitness normal off ssh")
+    print("so like this: python EA_task2.py 123 intermediate_blend tournament_selection survival_selection_fitness normal off ssh")
     sys.exit(1)
 
 
@@ -194,8 +195,10 @@ class Population():
         return print_class
 
 
-def simulate(training_i, n_pop, n_weights, n_children, n_generations, cross_type, cross_method, select_type, select_method, surv_type, surv_method, mut_type, mut_method, mut_var,
-             stagnation_point=5):
+def simulate(training_i, n_pop, n_weights, n_children, n_generations, 
+            cross_type, cross_method, select_type, select_method,
+            surv_type, surv_method, mut_type, mut_method, mut_var, 
+            cross_var=0.5, select_var=5, stagnation_point=5):
     # initialize population
     population = Population(n_pop, n_weights, sharing=True)
 
@@ -213,8 +216,8 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, cross_type
             population.stagnation_count = 0
 
         population.create_children(n_children=n_children, 
-                                select_method=select_method, select_var=5,
-                                cross_method=cross_method, cross_var=0.5, 
+                                select_method=select_method, select_var=select_var,
+                                cross_method=cross_method, cross_var=cross_var, 
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var)
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
@@ -233,16 +236,16 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, cross_type
 
 if __name__ == "__main__":
     # initialize number of trainings
-    n_training = 1
+    n_training = 3
     # initialize parameters
-    n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 20, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 5
+    n_generations = 10
     
-    n_children = 30
+    n_children = 60
 
     for i in range(n_training):
         print('Training iteration: ', i)
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
-        cross_type=sys.argv[2], cross_method=crossover_method, select_type=sys.argv[3], select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
+        cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
         mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var)

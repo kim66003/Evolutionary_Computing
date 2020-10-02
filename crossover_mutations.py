@@ -25,8 +25,7 @@ def discrete_n_point(parent1, parent2, n):
     # Cross over between n distinct locations
     child1 = deepcopy(parent1)
     child2 = deepcopy(parent2)
-    random_indices = sorted(np.random.choice(range(1, len(child1)), n,
-                                             replace=False))
+    random_indices = sorted(np.random.choice(range(1, len(child1)), n, replace=False))
     split_child1 = np.split(child1, random_indices)
     split_child2 = np.split(child2, random_indices)
 
@@ -37,10 +36,8 @@ def discrete_n_point(parent1, parent2, n):
 
     # Choose which child to keep
     if np.random.randint(2):
-        print('child2: ', np.concatenate(split_child2))
         return np.concatenate(split_child1)
     else:
-        print('child1: ', np.concatenate(split_child1))
         return np.concatenate(split_child2)
 
 
