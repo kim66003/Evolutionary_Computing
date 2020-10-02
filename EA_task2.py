@@ -112,7 +112,7 @@ class Population():
         return distance_matrix
 
     def fitness_sharing(self, distance_matrix, fitness, sigma=None):
-        denom = np.array([sum(1 - (i / sigma) if i < sigma else 0 for i in l) 
+        denom = np.array([sum(1 - (i / sigma) if i <= sigma else 0 for i in l) 
                           for l in distance_matrix])      
         return (fitness / denom)
         
