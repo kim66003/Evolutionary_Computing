@@ -39,7 +39,7 @@ if len(sys.argv) > 3:
     print("Parameter SETTINGS:\nenemy: {}\nmutation: {}\nmutation_var={}".format(enemy_no, mutation_method, mutation_var))
 else:
     print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform/none (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
-    print("so like this: python EA_task1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
+    print("so like this: python EA_task1.py 1 normal off ssh\n or: python EA_task1.py 2 uniform off\n or: python EA_task1.py 3 uniform on")
     sys.exit(1)
 
 
@@ -88,9 +88,8 @@ class Population():
         return distance_matrix
 
     def fitness_sharing(self, distance_matrix, fitness, sigma=None):
-        denom = np.array([sum(0 if i < sigma else (1 - (i / sigma)) for i in l) 
-                          for l in distance_matrix])
-        print("denom: ", denom)
+        denom = np.array([sum(1 - (i / sigma) if i < sigma else 0 for i in l) 
+                          for l in distance_matrix])      
         return (fitness / denom)
         
     def calc_fitness(self, pop):

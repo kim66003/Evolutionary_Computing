@@ -21,7 +21,8 @@ import numpy as np
 
 # environment settings
 if len(sys.argv) > 3:
-    enemy_no = sys.argv[1]
+    enemies = [int(sys.argv[1][0]),int(sys.argv[1][1]),int(sys.argv[1][2])]
+    print(enemies)
     if sys.argv[2] == 'normal':
         mutation_method = normal_mutation
         mutation_var = 0.1
@@ -36,14 +37,14 @@ if len(sys.argv) > 3:
     if len(sys.argv) > 4:
         if sys.argv[4] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
-    print("Parameter SETTINGS:\nenemy: {}\nmutation: {}\nmutation_var={}".format(enemy_no, mutation_method, mutation_var))
+    print("Parameter SETTINGS: enemies: {}\nmutation: {}\nmutation_var={}".format(enemies, mutation_method, mutation_var))
 else:
-    print("arg1: 1/2/3 (enemy_no), arg2: normal/uniform/none (mutation), arg3: on/off (prints) arg4: ssh (optional if running in terminal)")
-    print("so like this: python EA_1.py 1 normal off ssh\n or: python EA_1.py 2 uniform off\n or: python EA_1.py 3 uniform on")
+    print("arg1: enemy_no1enemy_no2enemy_no3, arg1: normal/uniform/none (mutation), arg2: on/off (prints) arg3: ssh (optional if running in terminal)")
+    print("so like this: python EA_task2.py 123 normal off ssh\n or: python EA_task2.py 456] uniform off\n or: python EA_task2.py 678 uniform on")
     sys.exit(1)
 
 
-experiment_name = "results/task1"
+experiment_name = "results/task2"
 os.makedirs(experiment_name, exist_ok=True)
 
 # initialize hidden neurons
@@ -51,11 +52,12 @@ n_hidden_neurons = 10
 
 # Enviroment
 env = Environment(experiment_name=experiment_name,
-                  enemies=[enemy_no],
+                  enemies=enemies,
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
                   level=2,
                   speed="fastest",
+                  multiplemode="yes",
                   logs=logs)
 
 
@@ -88,8 +90,8 @@ class Population():
         return distance_matrix
 
     def fitness_sharing(self, distance_matrix, fitness, sigma=None):
-        denom = np.array([np.sum(0 if i < sigma else (1 - (i / sigma)) for i in l) 
-                          for l in distance_matrix])
+        denom = np.array([sum(1 - (i / sigma) if i < sigma else 0 for i in l) 
+                          for l in distance_matrix])      
         return (fitness / denom)
         
     def calc_fitness(self, pop):
@@ -146,13 +148,13 @@ class Population():
         self.generation += 1
 
 
-    def save_results(self, training_i, mutation, first_run=False):
+    def save_results(self, training_i, crossover, selection, mutation, first_run=False):
         best = np.argmax(self.fitness)
         std  =  np.std(self.fitness)
         mean = np.mean(self.fitness)
 
         # saves results of this generation
-        file_results  = open(experiment_name+f'/results_enemy{env.enemyn}_train{training_i}_mut{mutation}.txt','a')
+        file_results  = open(experiment_name+f'/results_enemy{env.enemyn}_train{training_i}_crossover{crossover}_selection{selection}_mut{mutation}.txt','a')
         if first_run:
             file_results.write('gen best mean std')
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
@@ -160,7 +162,7 @@ class Population():
         file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}_mut{mutation}.txt',self.pop[best])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}_crossover{crossover}_selection{selection}_mut{mutation}.txt',self.pop[best])
 
 
     def __str__(self):
@@ -171,13 +173,13 @@ class Population():
         return print_class
 
 
-def simulate(training_i, n_pop, n_weights, n_children, n_generations, mutation_type, mut_method, mut_var,
+def simulate(training_i, n_pop, n_weights, n_children, n_generations, crossover_type, selection_type, mutation_type, mut_method, mut_var,
              stagnation_point=5):
     # initialize population
-    population = Population(n_pop, n_weights)
+    population = Population(n_pop, n_weights, sharing=True)
 
     # saves results for first pop
-    population.save_results(training_i, mutation_type, first_run=True)
+    population.save_results(training_i, crossover_type, selection_type, mutation_type, first_run=True)
 
     for i in range(n_generations):
         print('Generation: ', i+1)
@@ -212,11 +214,11 @@ if __name__ == "__main__":
     # initialize number of trainings
     n_training = 10
     # initialize parameters
-    n_pop, n_weights = 100, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
     n_generations = 30
-
-    n_children = 200
+    
+    n_children = 20
 
     for i in range(n_training):
         print('Training iteration: ', i)
