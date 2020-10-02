@@ -82,7 +82,7 @@ def intermediate_blend(parent1, parent2, alpha=0.5):
                                        parent2[i] + alpha * d[i])
                      for i in range(len(d))])
 
-
+# Mutation methods
 def uniform_mutation(individual, prob=0.01):
     # Randomly reset a gene to a uniformly sampled value
     mask = np.random.uniform(0, 1, len(individual))

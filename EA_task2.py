@@ -20,27 +20,49 @@ import numpy as np
 
 
 # environment settings
-if len(sys.argv) > 3:
+if len(sys.argv) > 5:
     enemies = [int(sys.argv[1][0]),int(sys.argv[1][1]),int(sys.argv[1][2])]
-    print(enemies)
-    if sys.argv[2] == 'normal':
+    # crossover type
+    if sys.argv[2] == 'discrete_uniform':
+        crossover_method = discrete_uniform
+    elif sys.argv[2] == 'discrete_n_point':
+        crossover_method = discrete_n_point
+    elif sys.argv[2] == 'intermediate_single':
+        crossover_method = intermediate_single
+    elif sys.argv[2] == 'intermediate_whole':
+        crossover_method = intermediate_whole
+    elif sys.argv[2] == 'intermediate_simple':
+        crossover_method = intermediate_simple
+    elif sys.argv[2] == 'intermediate_blend':
+        crossover_method = intermediate_blend    
+    # selection type
+    if sys.argv[3] == 'tournament_selection':
+        selection_method = tournament_selection
+    elif sys.argv[3] == 'fps':
+        selection_method = fps
+    elif sys.argv[3] == 'linear_ranking':
+        selection_method = linear_ranking
+    # survival type
+    if sys.argv[4] == 'survival_selection_fitness':
+        survival_method = survival_selection_fitness 
+    elif sys.argv[4] == 'survival_selection_prob':
+        survival_method = survival_selection_prob
+    # mutation type
+    if sys.argv[5] == 'normal':
         mutation_method = normal_mutation
         mutation_var = 0.1
-    elif sys.argv[2] == 'uniform':
+    elif sys.argv[5] == 'uniform':
         mutation_method = uniform_mutation
         mutation_var = 0.01
-    elif sys.argv[2] == 'none':
-        mutation_method = sys.argv[2]
-        mutation_var = 0
-    if sys.argv[3] in ["on", "off"]:
-        logs = sys.argv[3]
-    if len(sys.argv) > 4:
-        if sys.argv[4] == 'ssh':
+    if sys.argv[6] in ["on", "off"]:
+        logs = sys.argv[6]
+    if len(sys.argv) > 6:
+        if sys.argv[7] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
-    print("Parameter SETTINGS: enemies: {}\nmutation: {}\nmutation_var={}".format(enemies, mutation_method, mutation_var))
+    print("Parameter SETTINGS: enemies: {}\ncrossover: {}\nselection: {}\nselection_survival: {}\nmutation: {}\nmutation_var={}".format(enemies, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], mutation_var))
 else:
-    print("arg1: enemy_no1enemy_no2enemy_no3, arg1: normal/uniform/none (mutation), arg2: on/off (prints) arg3: ssh (optional if running in terminal)")
-    print("so like this: python EA_task2.py 123 normal off ssh\n or: python EA_task2.py 456] uniform off\n or: python EA_task2.py 678 uniform on")
+    print("arg1: enemy_no1enemy_no2enemy_no3, arg2: crossover type, arg3: selection type, arg4: survival selection, arg5: normal/uniform (mutation), arg6: on/off (prints) arg7: ssh (optional if running in terminal)")
+    print("so like this: python EA_task2.py 123 intermediate_blend tournament survival_selection_fitness normal off ssh")
     sys.exit(1)
 
 
@@ -98,7 +120,6 @@ class Population():
         fitness = np.array([env.play(pcont=x)[0] for x in pop])
         if self.sharing:
             distance_matrix = self.distance(pop)
-            print('distance matrix: ', distance_matrix)
             return self.fitness_sharing(distance_matrix, fitness,sigma = 2)
         else:
             return fitness
@@ -148,13 +169,13 @@ class Population():
         self.generation += 1
 
 
-    def save_results(self, training_i, crossover, selection, mutation, first_run=False):
+    def save_results(self, training_i, crossover, selection, survival, mutation, first_run=False):
         best = np.argmax(self.fitness)
         std  =  np.std(self.fitness)
         mean = np.mean(self.fitness)
 
         # saves results of this generation
-        file_results  = open(experiment_name+f'/results_enemy{env.enemyn}_train{training_i}_crossover{crossover}_selection{selection}_mut{mutation}.txt','a')
+        file_results  = open(experiment_name+f'/results_enemy{env.enemyn}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}.txt','a')
         if first_run:
             file_results.write('gen best mean std')
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
@@ -162,7 +183,7 @@ class Population():
         file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}_crossover{crossover}_selection{selection}_mut{mutation}.txt',self.pop[best])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemyn}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}.txt',self.pop[best])
 
 
     def __str__(self):
@@ -173,13 +194,13 @@ class Population():
         return print_class
 
 
-def simulate(training_i, n_pop, n_weights, n_children, n_generations, crossover_type, selection_type, mutation_type, mut_method, mut_var,
+def simulate(training_i, n_pop, n_weights, n_children, n_generations, cross_type, cross_method, select_type, select_method, surv_type, surv_method, mut_type, mut_method, mut_var,
              stagnation_point=5):
     # initialize population
     population = Population(n_pop, n_weights, sharing=True)
 
     # saves results for first pop
-    population.save_results(training_i, crossover_type, selection_type, mutation_type, first_run=True)
+    population.save_results(training_i, cross_type, select_type, surv_type, mut_type, first_run=True)
 
     for i in range(n_generations):
         print('Generation: ', i+1)
@@ -192,12 +213,12 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, crossover_
             population.stagnation_count = 0
 
         population.create_children(n_children=n_children, 
-                                select_method=tournament_selection, select_var=5,
-                                cross_method=intermediate_whole, cross_var=0.5, 
+                                select_method=select_method, select_var=5,
+                                cross_method=cross_method, cross_var=0.5, 
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var)
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
-        new_fitness, new_pop = survival_selection_prob(population)
+        new_fitness, new_pop = surv_method(population)
         
         #Always let the best of the previous population advance to the next generation
         best = np.argmax(population.fitness)
@@ -208,19 +229,20 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations, crossover_
         population.replace_new_gen(new_pop, new_fitness)
         
         # save results for every generation
-        population.save_results(training_i, mutation_type)
+        population.save_results(training_i, cross_type, select_type, surv_type, mut_type)
 
 if __name__ == "__main__":
     # initialize number of trainings
-    n_training = 10
+    n_training = 1
     # initialize parameters
     n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 30
+    n_generations = 5
     
-    n_children = 20
+    n_children = 30
 
     for i in range(n_training):
         print('Training iteration: ', i)
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
-        mutation_type=sys.argv[2], mut_method=mutation_method, mut_var=mutation_var)
+        cross_type=sys.argv[2], cross_method=crossover_method, select_type=sys.argv[3], select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
+        mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var)

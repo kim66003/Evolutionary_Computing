@@ -37,7 +37,7 @@ def linear_ranking(population, sp):
     index_individual = np.random.choice(range(len(rank_pops)), p=prob)
     return rank_pops[index_individual]
 
-
+# Survival selection methods
 def survival_selection_fitness(population):
     children_fitness_reshape = np.reshape(population.children_fitness, (-1, 1))
     new_fitness, rank_children = zip(*sorted(zip(children_fitness_reshape, 
