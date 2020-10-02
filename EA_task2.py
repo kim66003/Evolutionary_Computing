@@ -25,17 +25,22 @@ if len(sys.argv) > 5:
     # crossover type
     if sys.argv[2] == 'discrete_uniform':
         crossover_method = discrete_uniform
+        crossover_var = None
     elif sys.argv[2] == 'discrete_n_point':
         crossover_method = discrete_n_point
         crossover_var = 2
     elif sys.argv[2] == 'intermediate_single':
         crossover_method = intermediate_single
+        crossover_var = 0.5
     elif sys.argv[2] == 'intermediate_whole':
         crossover_method = intermediate_whole
+        crossover_var = 0.5
     elif sys.argv[2] == 'intermediate_simple':
         crossover_method = intermediate_simple
+        crossover_var = 0.5
     elif sys.argv[2] == 'intermediate_blend':
-        crossover_method = intermediate_blend    
+        crossover_method = intermediate_blend
+        crossover_var = 0.5    
     # selection type
     if sys.argv[3] == 'tournament_selection':
         selection_method = tournament_selection
