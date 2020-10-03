@@ -12,7 +12,7 @@ import numpy as np
 import scipy.spatial
 
 
-def tournament_selection(population, k):
+def tournament_selection(population, k=5):
     # Sample k individuals and select the most fit individual
     indices = np.random.randint(0, len(population.pop), k)
     best_individual = np.argmax(population.fitness[indices])
@@ -20,9 +20,10 @@ def tournament_selection(population, k):
 
 
 def fps(population, *_):
+    print(population.pop, (population.pop).shape)
+    print(population.fitness/np.sum(population.fitness), (population.fitness/np.sum(population.fitness)).shape)
     # Return an individual with their probability based on their fitness
-    return np.random.choice(population.pop,
-                            p=population.fitness/np.sum(population.fitness))
+    return np.random.choice(population.pop,p=population.fitness/np.sum(population.fitness))
 
 
 def linear_ranking(population, sp):
