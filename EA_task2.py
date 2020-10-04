@@ -67,6 +67,7 @@ if len(sys.argv) > 5:
     if len(sys.argv) > 6:
         if sys.argv[7] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
+    if len(sys.argv) > 7:
         if sys.argv[8] == 'fitness_sharing':
             sharing = True
     print("Parameter SETTINGS: enemies: {}\ncrossover: {}\nselection: {}\nselection_survival: {}\nmutation: {}\nmutation_var={}".format(enemies, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], mutation_var))
