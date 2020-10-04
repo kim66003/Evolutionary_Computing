@@ -20,7 +20,7 @@ import numpy as np
 
 
 # environment settings
-if len(sys.argv) > 5:
+if len(sys.argv) > 6:
     enemies = [int(sys.argv[1][0]),int(sys.argv[1][1]),int(sys.argv[1][2])]
     # crossover type
     if sys.argv[2] == 'discrete_uniform':
@@ -64,10 +64,10 @@ if len(sys.argv) > 5:
         logs = sys.argv[6]
     # set fitness sharing parameter
     sharing = False
-    if len(sys.argv) > 6:
+    if len(sys.argv) > 7:
         if sys.argv[7] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
-    if len(sys.argv) > 7:
+    if len(sys.argv) > 8:
         if sys.argv[8] == 'fitness_sharing':
             sharing = True
     print("Parameter SETTINGS: enemies: {}\ncrossover: {}\nselection: {}\nselection_survival: {}\nmutation: {}\nmutation_var={}".format(enemies, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], mutation_var))
