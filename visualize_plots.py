@@ -38,8 +38,7 @@ def preprocess_results(results):
     return mean_best, std_best, mean_average, std_average
 
 
-def line_plot(results, enemy, extra_print=None, uniform=False, normal=False, none=False):
-    colors = ['cyan', 'blue', 'magenta', 'purple']
+def line_plot(results, methods, colors, enemy, extra_print=None):
     for i, result in enumerate(results):
         mean_best, std_best, mean_average, std_average = result
         lower_bound_best = mean_best - std_best
@@ -47,44 +46,36 @@ def line_plot(results, enemy, extra_print=None, uniform=False, normal=False, non
         lower_bound_avg = mean_average - std_average
         upper_bound_avg = mean_average + std_average
 
+        # first plot mean of best solutions
         plt.plot(mean_best, color=colors[i*2], linestyle='dashed')
+        # then plot mean of average solutions
         plt.plot(mean_average, color=colors[i*2+1])
         plt.xlabel('Generations')
         plt.ylabel('Fitness')
-        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i*2])    
+        # plot std of mean best
+        plt.fill_between(range(len(mean_best)), lower_bound_best, upper_bound_best, alpha=.3, color=colors[i*2])   
+        # plot std of mean average 
         plt.fill_between(range(len(mean_average)), lower_bound_avg, upper_bound_avg, alpha=.3, color=colors[i*2+1])
 
-    if len(results) == 2:
-        if uniform == True and normal == True:
-            plt.legend(['EA_uniform: mean best solution', 'EA_uniform: mean average solution', 'EA_normal: mean best solution', 'EA_normal: mean average solution'], fontsize='x-large')
-        elif uniform == True and none == True:
-            plt.legend(['EA_uniform: mean best solution', 'EA_uniform: mean average solution', 'EA_nomut: mean best solution', 'EA_nomut: mean average solution'], fontsize='x-large')
-        elif normal == True and none == True:
-            plt.legend(['EA_normal: mean best solution', 'EA_normal: mean average solution', 'EA_nomut: mean best solution', 'EA_nomut: mean average solution'], fontsize='x-large')
+    legend_titles = []
+    for i in range(len(methods)):
+        legend_titles.append(f'{methods[i]}: mean best solution')
+        legend_titles.append(f'{methods[i]}: mean average solution')
 
-        plt.savefig('results/plots/lineplot_enemy{}{}'.format(enemy, extra_print))
-    elif len(results) == 1:
-        plt.legend(['EA3: mean best solution', 'EA3: mean average solution'], fontsize='x-large')
-        plt.savefig('results/plots/lineplot_enemy{}_doomsday'.format(enemy))
+    plt.legend(legend_titles, fontsize='large')
+    plt.savefig('results/plots/lineplot_enemy{}{}'.format(enemy, extra_print))
     plt.show()
 
 
 if __name__ == "__main__":
-    enemy = 3
-    # results mutation uniform
-    results_files_1 = load_files('results/task1/', enemy, 'uniform')
-    results_1 = preprocess_results(results_files_1)
-    # results mutation normal
-    results_files_2 = load_files('results/task1/', enemy, 'normal')
-    results_2 = preprocess_results(results_files_2)
-    # results doomsday
-    # results_files_3 = load_files('results/task1/', enemy, 'doomsday')
-    # results_3 = preprocess_results(results_files_3)
-    # results mutnone
-    # results_files_4 = load_files('results/task1/', enemy, 'none')
-    # results_4 = preprocess_results(results_files_4)
+    enemy = '[4, 5, 6]'
+    methods = ['discrete_uniform', 'discrete_n_point', 'intermediate_single', 'intermediate_whole', 'intermediate_simple', 'intermediate_blend']
+    results = []
 
-    line_plot([results_1, results_2], enemy=enemy, extra_print='_uniform_vs_normal', uniform=True, normal=True)
-    
-    # line_plot([results_1, results_4], enemy=enemy, extra_print='_uniform_vs_none', uniform=True, none=True)
-    # line_plot([results_2, results_4], enemy=enemy, extra_print='_normal_vs_none', normal=True, none=True)
+    for method in methods:
+        results_files = load_files('results/task2/', enemy, method)
+        result = preprocess_results(results_files)
+        results.append(result)
+
+    colors = ['red', 'green', 'orange', 'cyan', 'yellow', 'magenta', 'blue', 'purple', 'sienna', 'darkviolet', 'teal', 'pink']
+    line_plot(results, methods, colors, enemy=enemy, extra_print='_crossover_methods')

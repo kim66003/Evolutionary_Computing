@@ -44,7 +44,7 @@ for mutation in mutations:
                 # Update the enemy  
                 env.update_parameter('enemies',[enemy])
                 # Load specialist controller
-                solution = np.loadtxt('results/task1/best_enemy'+str(enemy)+'_train'+str(train)+'_mut'+mutation+'.txt')
+                solution = np.loadtxt('results/task2/best_enemy'+str(enemy)+'_train'+str(train)+'_mut'+mutation+'.txt')
                 env.play(solution)
                 individual_gain = env.get_playerlife() - env.get_enemylife()
                 mean_indv_gain.append(individual_gain)

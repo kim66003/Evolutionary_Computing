@@ -25,10 +25,10 @@ if len(sys.argv) > 5:
     # crossover type
     if sys.argv[2] == 'discrete_uniform':
         crossover_method = discrete_uniform
-        crossover_var = None
+        crossover_var = 0.5
     elif sys.argv[2] == 'discrete_n_point':
         crossover_method = discrete_n_point
-        crossover_var = 2
+        crossover_var = 20  # random value for n point
     elif sys.argv[2] == 'intermediate_single':
         crossover_method = intermediate_single
         crossover_var = 0.5
@@ -62,9 +62,13 @@ if len(sys.argv) > 5:
         mutation_var = 0.01
     if sys.argv[6] in ["on", "off"]:
         logs = sys.argv[6]
+    # set fitness sharing parameter
+    sharing = False
     if len(sys.argv) > 6:
         if sys.argv[7] == 'ssh':
             os.environ["SDL_VIDEODRIVER"] = "dummy"
+        if sys.argv[8] == 'fitness_sharing':
+            sharing = True
     print("Parameter SETTINGS: enemies: {}\ncrossover: {}\nselection: {}\nselection_survival: {}\nmutation: {}\nmutation_var={}".format(enemies, sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5], mutation_var))
 else:
     print("arg1: enemy_no1enemy_no2enemy_no3, arg2: crossover type, arg3: selection type, arg4: survival selection, arg5: normal/uniform (mutation), arg6: on/off (prints) arg7: ssh (optional if running in terminal)")
@@ -72,7 +76,7 @@ else:
     sys.exit(1)
 
 
-experiment_name = "results/task2"
+experiment_name = "results/task2/no_fitness_sharing"
 os.makedirs(experiment_name, exist_ok=True)
 
 # initialize hidden neurons
@@ -99,14 +103,14 @@ class Population():
         self.mutation_fraction = 0.2
         self.generation = 0
         self.sharing = sharing
-
+        self.original_fitness = []
+        
         # create population
         self.pop = np.random.uniform(self.lower_bound, self.upper_bound,
                                      (self.size, self.n_weights))
 
         # calculate fitness for initial population
         self.fitness = self.calc_fitness(self.pop)
-
         # best solution
         self.best_solution = max(self.fitness)
         # stagnation counter
@@ -123,10 +127,16 @@ class Population():
         return (fitness / denom)
         
     def calc_fitness(self, pop):
-        fitness = np.array([env.play(pcont=x)[0] for x in pop])
+        results = np.array([env.play(pcont=x) for x in pop])
+        fitness = results[:, 0]
+        self.original_fitness = fitness
+        #player_life = results[:, 1]
+        #enemy_life = results[:, 2]
+        #time = results[:, 3]
+        
         if self.sharing:
             distance_matrix = self.distance(pop)
-            return self.fitness_sharing(distance_matrix, fitness,sigma = 2)
+            return self.fitness_sharing(distance_matrix, fitness, sigma = 2)
         else:
             return fitness
     
@@ -179,7 +189,7 @@ class Population():
         best = np.argmax(self.fitness)
         std  =  np.std(self.fitness)
         mean = np.mean(self.fitness)
-
+        best_performance = np.argmax(self.original_fitness)
         # saves results of this generation
         file_results  = open(experiment_name+f'/results_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}.txt','a')
         if first_run:
@@ -189,7 +199,7 @@ class Population():
         file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}.txt',self.pop[best])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}.txt',self.pop[best_performance])
 
 
     def __str__(self):
@@ -203,9 +213,9 @@ class Population():
 def simulate(training_i, n_pop, n_weights, n_children, n_generations, 
             cross_type, cross_method, select_type, select_method,
             surv_type, surv_method, mut_type, mut_method, mut_var, 
-            cross_var=0.5, select_var=5, stagnation_point=5):
+            cross_var=0.5, select_var=5, stagnation_point=5, fitness_sharing=False):
     # initialize population
-    population = Population(n_pop, n_weights, sharing=True)
+    population = Population(n_pop, n_weights, sharing=fitness_sharing)
 
     # saves results for first pop
     population.save_results(training_i, cross_type, select_type, surv_type, mut_type, first_run=True)
@@ -226,10 +236,12 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var)
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
-        new_fitness, new_pop = surv_method(population)
-        
+        indices = surv_method(population)
+        population.original_fitness = population.original_fitness[indices]
+        new_fitness = population.children_fitness[indices]
+        new_pop = population.children[indices]
         #Always let the best of the previous population advance to the next generation
-        best = np.argmax(population.fitness)
+        best = np.argmax(population.original_fitness)
         new_pop[-1] = population.pop[best]
         new_fitness[-1] = population.fitness[best]
         
@@ -241,17 +253,17 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
 
 if __name__ == "__main__":
     # initialize number of trainings
-    n_training = 3
+    n_training = 5
     # initialize parameters
-    n_pop, n_weights = 20, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 30, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
     n_generations = 10
     
-    n_children = 60
+    n_children = 90
 
     for i in range(n_training):
         print('Training iteration: ', i)
         simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
         cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
         select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
-        mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var)
+        mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var, fitness_sharing=sharing)

@@ -20,10 +20,11 @@ def tournament_selection(population, k=5):
 
 
 def fps(population, *_):
-    print(population.pop, (population.pop).shape)
-    print(population.fitness/np.sum(population.fitness), (population.fitness/np.sum(population.fitness)).shape)
+    norm_fitness = norm(population.fitness)
     # Return an individual with their probability based on their fitness
-    return np.random.choice(population.pop,p=population.fitness/np.sum(population.fitness))
+    index_individual = np.random.choice(range(len(population.pop)),
+                                        p=norm_fitness/np.sum(norm_fitness))
+    return population.pop[index_individual]
 
 
 def linear_ranking(population, sp):
@@ -41,13 +42,11 @@ def linear_ranking(population, sp):
 # Survival selection methods
 def survival_selection_fitness(population):
     children_fitness_reshape = np.reshape(population.children_fitness, (-1, 1))
-    new_fitness, rank_children = zip(*sorted(zip(children_fitness_reshape, 
-                                                 population.children), 
-                                             key=lambda x:x[0],
-                                             reverse=True))
-    return (np.array(new_fitness[:population.size]).flatten(), 
-            np.array(rank_children[:population.size]))
-
+    _, rank_index = zip(*sorted(zip(children_fitness_reshape, 
+                                    range(len(population.children)), 
+                                key=lambda x:x[0],
+                                reverse=True)))
+    return np.array(rank_index[:population.size])
 
 def survival_selection_prob(population):
     norm_fitness = norm(population.children_fitness)
@@ -56,9 +55,7 @@ def survival_selection_prob(population):
                                   size=population.size,
                                   p=probs, 
                                   replace=False)
-    rank_children = np.array(population.children[rank_index])
-    new_fitness = np.array(population.children_fitness[rank_index]).flatten()
-    return (new_fitness, rank_children)
+    return rank_index
 
 
 def norm(fitness):
