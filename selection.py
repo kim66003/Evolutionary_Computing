@@ -43,9 +43,9 @@ def linear_ranking(population, sp):
 def survival_selection_fitness(population):
     children_fitness_reshape = np.reshape(population.children_fitness, (-1, 1))
     _, rank_index = zip(*sorted(zip(children_fitness_reshape, 
-                                    range(len(population.children)), 
+                                    range(len(population.children))), 
                                 key=lambda x:x[0],
-                                reverse=True)))
+                                reverse=True)) 
     return np.array(rank_index[:population.size])
 
 def survival_selection_prob(population):
