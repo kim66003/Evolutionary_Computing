@@ -31,8 +31,6 @@ if len(sys.argv) > 6:
         crossover_var = 20  # random value for n point
     elif sys.argv[2] == 'intermediate_single':
         crossover_method = intermediate_single
-
-RUN: run status: enemy: 2; fitness: -5.313205979041787; player life: 0; enemy life: 100; time: 203
         crossover_var = 0.5
     elif sys.argv[2] == 'intermediate_whole':
         crossover_method = intermediate_whole
