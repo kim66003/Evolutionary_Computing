@@ -69,11 +69,11 @@ def line_plot(results, methods, colors, enemy, extra_print=None):
 
 if __name__ == "__main__":
     enemy = '[4, 5, 6]'
-    methods = ['discrete_uniform', 'discrete_n_point', 'intermediate_single', 'intermediate_whole', 'intermediate_simple', 'intermediate_blend']
+    methods = ['discrete_uniform', 'discrete_n_point', 'intermediate_whole', 'intermediate_blend']
     results = []
 
     for method in methods:
-        results_files = load_files('results/task2/', enemy, method)
+        results_files = load_files('results/task2/fitness_sharing/', enemy, method)
         result = preprocess_results(results_files)
         results.append(result)
 
