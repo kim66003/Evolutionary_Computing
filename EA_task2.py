@@ -242,7 +242,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         # new_fitness, new_pop = survival_selection_fitness(population)
         indices = surv_method(population)
         population.original_fitness = population.original_fitness[indices]
-        population.shared_fitnesses = population.shared_fitnesses[indices]
+        #population.shared_fitnesses = population.shared_fitnesses[indices]
         new_fitness = population.children_fitness[indices]
         new_pop = population.children[indices]
         #Always let the best of the previous population advance to the next generation
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     for i in range(n_training):
         print('Training iteration: ', i)
         # for sigma_ in sigmas_fitness:
-        for mutation_variable in mutation_var_normal:
+        for mutation_variable in mutation_var_uniform:
             simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
             cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
             select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
