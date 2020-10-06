@@ -185,6 +185,7 @@ class Population():
         # update best solution
         if max(self.fitness) > self.best_solution:
             self.best_solution = max(self.fitness)
+            self.stagnation_count = 0
         else:
             self.stagnation_count += 1
         self.generation += 1
