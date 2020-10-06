@@ -131,7 +131,7 @@ class Population():
                           for l in distance_matrix])
         return (fitness / denom)
         
-    def calc_fitness(self, pop, sigma):
+    def calc_fitness(self, pop, sigma=None):
         results = np.array([env.play(pcont=x) for x in pop])
         fitness = results[:, 0]
         self.original_fitness = fitness
