@@ -235,6 +235,11 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
             mutation_multiple = 10
             population.stagnation_count = 0
 
+        best_index = np.argmax(population.original_fitness)
+        best_pop = population.pop[best_index]
+        best_fitness = population.original_fitness[best_index]
+        best_temp = population.fitness[best_index]
+
         population.create_children(n_children=n_children, 
                                 select_method=select_method, select_var=select_var,
                                 cross_method=cross_method, cross_var=cross_var, 
@@ -250,9 +255,11 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         new_fitness = population.children_fitness[indices]
         new_pop = population.children[indices]
         #Always let the best of the previous population advance to the next generation
-        best = np.argmax(population.original_fitness)
-        new_pop[-1] = population.pop[best]
-        new_fitness[-1] = population.fitness[best]
+        # best = np.argmax(population.original_fitness)
+        
+        new_pop[-1] = best_pop
+        new_fitness[-1] = best_temp
+        population.original_fitness[-1] = best_fitness
         #Replace the population by its children
         population.replace_new_gen(new_pop, new_fitness)
         

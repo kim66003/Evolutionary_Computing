@@ -55,6 +55,11 @@ def survival_selection_prob(population):
                                   size=population.size,
                                   p=probs, 
                                   replace=False)
+    new_norm_fitness = norm_fitness[rank_index]
+    _, rank_index = zip(*sorted(zip(new_norm_fitness, 
+                                    rank_index), 
+                                key=lambda x:x[0],
+                                reverse=True)) 
     return rank_index
 
 
