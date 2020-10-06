@@ -26,7 +26,7 @@ if len(sys.argv) > 6:
     # crossover type
     if sys.argv[2] == 'discrete_uniform':
         crossover_method = discrete_uniform
-        crossover_var = None
+        crossover_var = 0.5
     elif sys.argv[2] == 'discrete_n_point':
         crossover_method = discrete_n_point
         crossover_var = 20  # random value for n point
