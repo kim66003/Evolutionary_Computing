@@ -68,14 +68,14 @@ def line_plot(results, methods, colors, enemy, extra_print=None):
 
 
 if __name__ == "__main__":
-    enemy = '[4, 5, 6]'
-    methods = ['discrete_uniform', 'discrete_n_point', 'intermediate_whole', 'intermediate_blend']
+    enemy = '[2, 7, 8]'
+    methods = ['mutuniform_0.01', 'mutuniform_0.05', 'mutnormal_0.5', 'mutnormal_0.75']
     results = []
 
     for method in methods:
-        results_files = load_files('results/task2/fitness_sharing/', enemy, method)
+        results_files = load_files('results/task2/parameter_tuning/mutation_tuning/', enemy, method)
         result = preprocess_results(results_files)
         results.append(result)
 
-    colors = ['red', 'green', 'orange', 'cyan', 'yellow', 'magenta', 'blue', 'purple', 'sienna', 'darkviolet', 'teal', 'pink']
-    line_plot(results, methods, colors, enemy=enemy, extra_print='_crossover_methods')
+    colors = ['red', 'cyan', 'green', 'purple', 'orange', 'yellow', 'magenta', 'blue', 'sienna', 'darkviolet', 'teal', 'pink']
+    line_plot(results, methods, colors, enemy=enemy, extra_print='_mutation_vars')
