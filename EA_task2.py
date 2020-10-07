@@ -272,10 +272,10 @@ if __name__ == "__main__":
     # initialize number of trainings
     n_training = 10
     # initialize parameters
-    n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 30, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 1
-    n_children = 20
+    n_generations = 10
+    n_children = 90
     sigmas_fitness = [0.5, 1, 1.5, 2]
     # sigma = None
 
