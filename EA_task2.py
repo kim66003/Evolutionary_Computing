@@ -106,14 +106,13 @@ class Population():
         self.generation = 0
         self.sharing = sharing
         self.sigma = sigma
-        self.original_fitness = []
         self.shared_fitnesses = []
         # create population
         self.pop = np.random.uniform(self.lower_bound, self.upper_bound,
                                      (self.size, self.n_weights))
 
         # calculate fitness for initial population
-        self.fitness = self.calc_fitness(self.pop, sigma=sigma)
+        self.fitness = self.calc_fitness(self.pop)
         # best solution
         self.best_solution = max(self.fitness)
         # stagnation counter
@@ -124,27 +123,22 @@ class Population():
         distance_matrix = scipy.spatial.distance.squareform(distance)
         return distance_matrix
 
-    def fitness_sharing(self, distance_matrix, fitness, sigma=None):
-        denom = np.array([sum(1 - (i / sigma) if i <= sigma else 0 for i in l) 
+    def fitness_sharing(self, distance_matrix, fitness):
+        denom = np.array([sum(1 - (i / self.sigma) if i <= self.sigma else 0 for i in l) 
                           for l in distance_matrix])
         #With how many other agents an agent shares its fitness
-        self.shared_fitnesses = np.array([sum(1 if i <= sigma else 0 for i in l) 
+        self.shared_fitnesses = np.array([sum(1 if i <= self.sigma else 0 for i in l) 
                           for l in distance_matrix])
         return (fitness / denom)
         
-    def calc_fitness(self, pop, sigma=None):
+    def calc_fitness(self, pop):
         results = np.array([env.play(pcont=x) for x in pop])
         fitness = results[:, 0]
-        self.original_fitness = fitness
         #player_life = results[:, 1]
         #enemy_life = results[:, 2]
         #time = results[:, 3]
         
-        if self.sharing:
-            distance_matrix = self.distance(pop)
-            return self.fitness_sharing(distance_matrix, fitness, sigma=sigma)
-        else:
-            return fitness
+        return fitness
     
     def create_children(self, n_children, sigma,
                         select_method=tournament_selection, select_var=None,
@@ -173,7 +167,7 @@ class Population():
 
         self.children = np.array(children)
         self.children_size = n_children
-        self.children_fitness = self.calc_fitness(self.children, sigma=sigma)
+        self.children_fitness = self.calc_fitness(self.children)
 
     
     def replace_new_gen(self, new_population, new_fitness):
@@ -196,7 +190,6 @@ class Population():
         best = np.argmax(self.fitness)
         std  =  np.std(self.fitness)
         mean = np.mean(self.fitness)
-        best_performance = np.argmax(self.original_fitness)
         # saves results of this generation
         file_results  = open(experiment_name+f'/results_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}_sigma{sigma}.txt','a')
         if first_run:
@@ -204,15 +197,16 @@ class Population():
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
         file_results.write('\n'+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
         file_results.close()
-        
-        if sharing:
-            file_results  = open(experiment_name+f'/shared_fitness_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
-            file_results.write('\n'+ str(self.shared_fitnesses))
-            file_results.close()
 
         # save weights
-        np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}_sigma{sigma}.txt',self.pop[best_performance])
+        np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}_sigma{sigma}.txt',self.pop[best])
 
+
+    def save_shared_fitness(self, training_i, sigma,type):
+        # save results of shared fitness separately
+        file_results  = open(experiment_name+f'/shared_fitness_{type}_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
+        file_results.write('\n'+ str(self.shared_fitnesses))
+        file_results.close()
 
     def __str__(self):
         print_class = ''
@@ -242,23 +236,23 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
             mutation_multiple = 10
             population.stagnation_count = 0
 
-        best_index = np.argmax(population.original_fitness)
+        best_index = np.argmax(population.fitness)
         best_pop = population.pop[best_index]
-        best_fitness = population.original_fitness[best_index]
-        best_temp = population.fitness[best_index]
+        best_fitness = population.fitness[best_index]
 
         population.create_children(n_children=n_children, 
                                 select_method=select_method, select_var=select_var,
                                 cross_method=cross_method, cross_var=cross_var, 
                                 mutation_method=mut_method, mutation_var=mutation_multiple*mut_var, sigma=sigma)
+
+        if population.sharing:
+            population.save_shared_fitness(training_i, sigma, "parents")
                                 
         # new_fitness, new_pop = survival_selection_fitness(population)
         indices = surv_method(population)
-        population.original_fitness = population.original_fitness[indices]
-        
-        #Save how much fitness the survivors shared
-        if(sharing):
-            population.shared_fitnesses = np.array(population.shared_fitnesses)[indices]
+
+        if population.sharing:
+            population.save_shared_fitness(training_i, sigma, "children")
 
         new_fitness = population.children_fitness[indices]
         new_pop = population.children[indices]
@@ -266,8 +260,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         # best = np.argmax(population.original_fitness)
         
         new_pop[-1] = best_pop
-        new_fitness[-1] = best_temp
-        population.original_fitness[-1] = best_fitness
+        new_fitness[-1] = best_fitness
         #Replace the population by its children
         population.replace_new_gen(new_pop, new_fitness)
         

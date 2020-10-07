@@ -13,14 +13,27 @@ import scipy.spatial
 
 
 def tournament_selection(population, k=5):
+    # fitness sharing
+    if population.sharing:
+        distance_matrix = population.distance(population.pop)
+        fitness = population.fitness_sharing(distance_matrix, population.fitness)
+    else:
+        fitness = population.fitness
     # Sample k individuals and select the most fit individual
     indices = np.random.randint(0, len(population.pop), k)
-    best_individual = np.argmax(population.fitness[indices])
+    best_individual = np.argmax(fitness[indices])
     return population.pop[indices[best_individual]]
 
 
 def fps(population, *_):
-    norm_fitness = norm(population.fitness)
+    # fitness sharing
+    if population.sharing:
+        distance_matrix = population.distance(population.pop)
+        fitness = population.fitness_sharing(distance_matrix, population.fitness)
+    else:
+        fitness = population.fitness
+    
+    norm_fitness = norm(fitness)
     # Return an individual with their probability based on their fitness
     index_individual = np.random.choice(range(len(population.pop)),
                                         p=norm_fitness/np.sum(norm_fitness))
@@ -28,8 +41,14 @@ def fps(population, *_):
 
 
 def linear_ranking(population, sp):
+    # fitness sharing
+    if population.sharing:
+        distance_matrix = population.distance(population.pop)
+        fitness = population.fitness_sharing(distance_matrix, population.fitness)
+    else:
+        fitness = population.fitness
     # Return an individual with their probability based on their rank
-    fitness_reshape = np.reshape(population.fitness, (-1, 1))
+    fitness_reshape = np.reshape(fitness, (-1, 1))
     rank_pops = np.array([x for _, x in sorted(zip(fitness_reshape, 
                                                    population.pop), 
                                                key=lambda x:x[0])])
@@ -41,7 +60,14 @@ def linear_ranking(population, sp):
 
 # Survival selection methods
 def survival_selection_fitness(population):
-    children_fitness_reshape = np.reshape(population.children_fitness, (-1, 1))
+    # fitness sharing
+    if population.sharing:
+        distance_matrix = population.distance(population.children)
+        fitness = population.fitness_sharing(distance_matrix, population.children_fitness)
+    else:
+        fitness = population.fitness
+
+    children_fitness_reshape = np.reshape(fitness, (-1, 1))
     _, rank_index = zip(*sorted(zip(children_fitness_reshape, 
                                     range(len(population.children))), 
                                 key=lambda x:x[0],
@@ -49,7 +75,14 @@ def survival_selection_fitness(population):
     return np.array(rank_index[:population.size])
 
 def survival_selection_prob(population):
-    norm_fitness = norm(population.children_fitness)
+    # fitness sharing
+    if population.sharing:
+        distance_matrix = population.distance(population.children)
+        fitness = population.fitness_sharing(distance_matrix, population.children_fitness)
+    else:
+        fitness = population.fitness
+
+    norm_fitness = norm(fitness)
     probs = norm_fitness/np.sum(norm_fitness)
     rank_index = np.random.choice(range(len(population.children)), 
                                   size=population.size,

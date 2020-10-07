@@ -91,7 +91,7 @@ if mode == "test":
 	# print("Winner for gain measure: \n", winners["gain"].head(n=3))
 	print("Winner for slain enemies: \n", winners_slain.head(n=3))
 	print("Winner for gain_measure: \n", winners_gain.head(n=3))
-	
+
 	# Index as ranks
 	winners_slain["time"] = 3000 - winners_slain["time"]
 	winners_gain["time"] = 3000 - winners_gain["time"]
