@@ -129,6 +129,7 @@ class Population():
         #With how many other agents an agent shares its fitness
         self.shared_fitnesses = np.array([sum(1 if i <= self.sigma else 0 for i in l) 
                           for l in distance_matrix])
+        print('shared_fitnesses: ', self.shared_fitnesses)
         return (fitness / denom)
         
     def calc_fitness(self, pop):
@@ -202,9 +203,9 @@ class Population():
         np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}_sigma{sigma}.txt',self.pop[best])
 
 
-    def save_shared_fitness(self, training_i, sigma,type):
+    def save_shared_fitness(self, training_i, sigma, name):
         # save results of shared fitness separately
-        file_results  = open(experiment_name+f'/shared_fitness_{type}_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
+        file_results  = open(experiment_name+f'/shared_fitness_{name}_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
         file_results.write('\n'+ str(self.shared_fitnesses))
         file_results.close()
 
@@ -271,10 +272,10 @@ if __name__ == "__main__":
     # initialize number of trainings
     n_training = 10
     # initialize parameters
-    n_pop, n_weights = 30, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 10, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 10
-    n_children = 90
+    n_generations = 1
+    n_children = 20
     sigmas_fitness = [0.5, 1, 1.5, 2]
     # sigma = None
 
