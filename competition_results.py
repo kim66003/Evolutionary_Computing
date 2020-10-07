@@ -14,11 +14,15 @@ import pygame
 
 ###### CREATE A FOLDER CALLED solutions IN THE SAME DIRECTORY AS THIS SCRIPT  AND PASTE ALL SOLUTION TXTs THERE ! #####
 
-mode = "demo"  # Can be test for generating competition files, or demo to just present the winners
+mode = "test"  # Can be test for generating competition files, or demo to just present the winners
 
 ######
 
-experiment_name = 'test'
+# turn off video game
+os.environ["SDL_VIDEODRIVER"] = "dummy"
+
+experiment_name = 'results/test/'
+plot_folder = 'results/plots/'
 n_enemies = 8
 n_hidden = 10
 
@@ -83,12 +87,15 @@ if mode == "test":
 	winners = pd.DataFrame(columns=["slain", "gain"])
 	winners_slain = df_final.sort_values(by=["enemies_slain", "player_life", "time"], ascending=False).reset_index()
 	winners_gain = df_final.sort_values(by="gain", ascending=False).reset_index()
-	print("Winner for slain enemies: \n", winners["slain"].head(n=3))
-	print("Winner for gain measure: \n", winners["gain"].head(n=3))
+	# print("Winner for slain enemies: \n", winners["slain"].head(n=3))
+	# print("Winner for gain measure: \n", winners["gain"].head(n=3))
+	print("Winner for slain enemies: \n", winners_slain.head(n=3))
+	print("Winner for gain_measure: \n", winners_gain.head(n=3))
+	
 	# Index as ranks
 	winners_slain["time"] = 3000 - winners_slain["time"]
 	winners_gain["time"] = 3000 - winners_gain["time"]
-	pd.concat([winners_slain, winners_gain], axis=1).to_csv("winners.csv")
+	pd.concat([winners_slain, winners_gain], axis=1).to_csv(experiment_name + "winners.csv")
 	# Prepare data for radar chart and make plots of winners and whole class
 	# adapted from: https://python-graph-gallery.com/391-radar-chart-with-several-individuals/
 	for winner in [winners_slain["group"], winners_gain["group"], ["whole_class"]]:                         # !!!! [:3]
@@ -146,7 +153,7 @@ if mode == "test":
 					# are really high
 					plt.ylim(bottom=min(values) - 10)
 					plt.legend(loc='lower right', bbox_to_anchor=(0.1, 0.1))
-					plt.savefig(group + "_energy.png", dpi=300)
+					plt.savefig(plot_folder + group + "_energy.png", dpi=300)
 					plt.close()
 
 					ax = plt.subplot(111, polar=True)
@@ -157,11 +164,11 @@ if mode == "test":
 
 			if group != "whole_class":
 				plt.legend(loc='lower right', bbox_to_anchor=(0.1, 0.1))
-				plt.savefig(group + "_energy.png", dpi=300)
+				plt.savefig(plot_folder + group + "_energy.png", dpi=300)
 				plt.close()
 
 	plt.close()
 	plt.hist(pd.to_numeric(df_final["gain"]))
 	plt.title("Distribution of gain\n(whole class)")
-	plt.savefig("gain_hist_whole_group.png", dpi=300)
+	plt.savefig(plot_folder + "gain_hist_whole_group.png", dpi=300)
 

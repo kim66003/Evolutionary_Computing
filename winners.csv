@@ -1,0 +1,3 @@
+,index,group,enemies_slain,gain,player_life,time,index,group,enemies_slain,gain,player_life,time
+0,0,"best_enemy[4, 7, 8]_train1_discrete_uniform_fps_survival_selection_prob_mutuniform_sigmaNone",30,-109.39999999999955,18.825000000000056,277.1999999999998,1,"best_enemy[4, 7, 8]_train0_discrete_uniform_fps_survival_selection_prob_mutuniform_sigmaNone",30,-77.3599999999995,17.830000000000048,295.3874999999998
+1,1,"best_enemy[4, 7, 8]_train0_discrete_uniform_fps_survival_selection_prob_mutuniform_sigmaNone",30,-77.3599999999995,17.830000000000048,295.3874999999998,0,"best_enemy[4, 7, 8]_train1_discrete_uniform_fps_survival_selection_prob_mutuniform_sigmaNone",30,-109.39999999999955,18.825000000000056,277.1999999999998

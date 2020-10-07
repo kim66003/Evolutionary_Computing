@@ -80,7 +80,7 @@ else:
 
 experiment_name = "results/task2/parameter_tuning/sigma_tuning/"
 os.makedirs(experiment_name, exist_ok=True)
-
+np.set_printoptions(threshold=sys.maxsize)
 # initialize hidden neurons
 n_hidden_neurons = 10
 
@@ -207,7 +207,6 @@ class Population():
         
         if sharing:
             file_results  = open(experiment_name+f'/shared_fitness_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
-            print('shared fitnesses ', self.shared_fitnesses)
             file_results.write('\n'+ str(self.shared_fitnesses))
             file_results.close()
 
