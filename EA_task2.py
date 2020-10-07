@@ -1,6 +1,6 @@
 ######################################
 # EA_1.py
-# Evolutionary Computing Task I
+# Evolutionary Computing Task II
 # VU 2020
 # Authors: Stefan Klut (2686873)
 #          Kimberley Boersma (2572145)
