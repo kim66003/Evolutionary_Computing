@@ -78,7 +78,7 @@ else:
     sys.exit(1)
 
 
-experiment_name = "results/task2/training/no_fitness_sharing/"
+experiment_name = "results/task2/parameter_tuning/sigma_tuning/"
 os.makedirs(experiment_name, exist_ok=True)
 
 # initialize hidden neurons
@@ -97,7 +97,7 @@ env = Environment(experiment_name=experiment_name,
 
 class Population():
     # initialize population class
-    def __init__(self, size, n_weights, lower_bound=-1, upper_bound=1, sharing=False):
+    def __init__(self, size, n_weights, lower_bound=-1, upper_bound=1, sharing=False, sigma=None):
         self.size = size
         self.n_weights = n_weights
         self.lower_bound = lower_bound
@@ -105,6 +105,7 @@ class Population():
         self.mutation_fraction = 0.2
         self.generation = 0
         self.sharing = sharing
+        self.sigma = sigma
         self.original_fitness = []
         self.shared_fitnesses = []
         # create population
@@ -112,7 +113,7 @@ class Population():
                                      (self.size, self.n_weights))
 
         # calculate fitness for initial population
-        self.fitness = self.calc_fitness(self.pop)
+        self.fitness = self.calc_fitness(self.pop, sigma=sigma)
         # best solution
         self.best_solution = max(self.fitness)
         # stagnation counter
@@ -203,6 +204,12 @@ class Population():
         print( '\n GENERATION '+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
         file_results.write('\n'+str(self.generation)+' '+str(round(self.fitness[best],6))+' '+str(round(mean,6))+' '+str(round(std,6)))
         file_results.close()
+        
+        if sharing:
+            file_results  = open(experiment_name+f'/shared_fitness_results_sigma{sigma}_enemy{env.enemies}_train{training_i}.txt','a')
+            print('shared fitnesses ', self.shared_fitnesses)
+            file_results.write('\n'+ str(self.shared_fitnesses))
+            file_results.close()
 
         # save weights
         np.savetxt(experiment_name+f'/best_enemy{env.enemies}_train{training_i}_{crossover}_{selection}_{survival}_mut{mutation}_sigma{sigma}.txt',self.pop[best_performance])
@@ -221,7 +228,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
             surv_type, surv_method, mut_type, mut_method, mut_var, sigma,
             cross_var=0.5, select_var=5, stagnation_point=5, fitness_sharing=False):
     # initialize population
-    population = Population(n_pop, n_weights, sharing=fitness_sharing)
+    population = Population(n_pop, n_weights, sharing=fitness_sharing, sigma=sigma)
 
     # saves results for first pop
     population.save_results(training_i, cross_type, select_type, surv_type, mut_type, sigma, first_run=True)
@@ -253,6 +260,7 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
         #Save how much fitness the survivors shared
         if(sharing):
             population.shared_fitnesses = np.array(population.shared_fitnesses)[indices]
+
         new_fitness = population.children_fitness[indices]
         new_pop = population.children[indices]
         #Always let the best of the previous population advance to the next generation
@@ -271,17 +279,17 @@ if __name__ == "__main__":
     # initialize number of trainings
     n_training = 10
     # initialize parameters
-    n_pop, n_weights = 50, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 30, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 15
-    n_children = 150
+    n_generations = 10
+    n_children = 90
     sigmas_fitness = [0.5, 1, 1.5, 2]
-    sigma = None
+    # sigma = None
 
     for i in range(n_training):
         print('Training iteration: ', i)
-        # for sigma_ in sigmas_fitness:
-        simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
-        cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
-        select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
-        mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var, fitness_sharing=sharing, sigma=sigma)
+        for sigma_ in sigmas_fitness:
+            simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
+            cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
+            select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
+            mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var, fitness_sharing=sharing, sigma=sigma_)
