@@ -78,7 +78,7 @@ else:
     sys.exit(1)
 
 
-experiment_name = "results/task2/parameter_tuning/sigma_tuning/"
+experiment_name = "results/task2/training/fitness_sharing/"
 os.makedirs(experiment_name, exist_ok=True)
 np.set_printoptions(threshold=sys.maxsize)
 # initialize hidden neurons
