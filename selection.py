@@ -12,27 +12,14 @@ import numpy as np
 import scipy.spatial
 
 
-def tournament_selection(population, k=5):
-    # fitness sharing
-    if population.sharing:
-        distance_matrix = population.distance(population.pop)
-        fitness = population.fitness_sharing(distance_matrix, population.fitness)
-    else:
-        fitness = population.fitness
+def tournament_selection(population, fitness, k=5):
     # Sample k individuals and select the most fit individual
     indices = np.random.randint(0, len(population.pop), k)
     best_individual = np.argmax(fitness[indices])
     return population.pop[indices[best_individual]]
 
 
-def fps(population, *_):
-    # fitness sharing
-    if population.sharing:
-        distance_matrix = population.distance(population.pop)
-        fitness = population.fitness_sharing(distance_matrix, population.fitness)
-    else:
-        fitness = population.fitness
-    
+def fps(population, fitness, *_):
     norm_fitness = norm(fitness)
     # Return an individual with their probability based on their fitness
     index_individual = np.random.choice(range(len(population.pop)),
@@ -40,13 +27,7 @@ def fps(population, *_):
     return population.pop[index_individual]
 
 
-def linear_ranking(population, sp):
-    # fitness sharing
-    if population.sharing:
-        distance_matrix = population.distance(population.pop)
-        fitness = population.fitness_sharing(distance_matrix, population.fitness)
-    else:
-        fitness = population.fitness
+def linear_ranking(population, fitness, sp):
     # Return an individual with their probability based on their rank
     fitness_reshape = np.reshape(fitness, (-1, 1))
     rank_pops = np.array([x for _, x in sorted(zip(fitness_reshape, 

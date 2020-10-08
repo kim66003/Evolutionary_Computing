@@ -153,11 +153,16 @@ class Population():
         assert select_var is not None, "Please add variable for the mutation."
 
         children = [] # list with children
+        if sharing:
+            distance_matrix = self.distance(self.pop)
+            fitness = self.fitness_sharing(distance_matrix, self.fitness)
+        else:
+            fitness = self.fitness
         
-        for i in range(n_children):
+        for _ in range(n_children):
             # select parents
-            parent1 = select_method(self, select_var)
-            parent2 = select_method(self, select_var)
+            parent1 = select_method(self, fitness, select_var)
+            parent2 = select_method(self, fitness, select_var)
             # create child with crossover
             child = cross_method(parent1, parent2, cross_var)
             if not mutation_method == "none":
@@ -270,19 +275,18 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
 
 if __name__ == "__main__":
     # initialize number of trainings
-    n_training = 10
+    n_training = 1
     # initialize parameters
-    n_pop, n_weights = 30, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 20, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 10
-    n_children = 90
-    sigmas_fitness = [0.5, 1, 1.5, 2]
-    # sigma = None
+    n_generations = 5
+    n_children = 60
+    # sigmas_fitness = [0.5, 1, 1.5, 2]
+    sigma = 3
 
     for i in range(n_training):
         print('Training iteration: ', i)
-        for sigma_ in sigmas_fitness:
-            simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
-            cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
-            select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
-            mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var, fitness_sharing=sharing, sigma=sigma_)
+        simulate(i, n_pop=n_pop, n_weights=n_weights, n_children=n_children, n_generations=n_generations, 
+        cross_type=sys.argv[2], cross_method=crossover_method, cross_var=crossover_var, select_type=sys.argv[3], 
+        select_method=selection_method, surv_type=sys.argv[4], surv_method=survival_method, 
+        mut_type=sys.argv[5], mut_method=mutation_method, mut_var=mutation_var, fitness_sharing=sharing, sigma=sigma)
