@@ -46,7 +46,7 @@ def survival_selection_fitness(population):
         distance_matrix = population.distance(population.children)
         fitness = population.fitness_sharing(distance_matrix, population.children_fitness)
     else:
-        fitness = population.fitness
+        fitness = population.children_fitness
 
     children_fitness_reshape = np.reshape(fitness, (-1, 1))
     _, rank_index = zip(*sorted(zip(children_fitness_reshape, 
@@ -61,7 +61,7 @@ def survival_selection_prob(population):
         distance_matrix = population.distance(population.children)
         fitness = population.fitness_sharing(distance_matrix, population.children_fitness)
     else:
-        fitness = population.fitness
+        fitness = population.children_fitness
 
     norm_fitness = norm(fitness)
     probs = norm_fitness/np.sum(norm_fitness)
