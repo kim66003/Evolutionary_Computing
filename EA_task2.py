@@ -275,14 +275,13 @@ def simulate(training_i, n_pop, n_weights, n_children, n_generations,
 
 if __name__ == "__main__":
     # initialize number of trainings
-    n_training = 1
+    n_training = 10
     # initialize parameters
-    n_pop, n_weights = 20, (env.get_num_sensors()+1) * \
+    n_pop, n_weights = 50, (env.get_num_sensors()+1) * \
         n_hidden_neurons + (n_hidden_neurons+1)*5
-    n_generations = 5
-    n_children = 60
-    # sigmas_fitness = [0.5, 1, 1.5, 2]
-    sigma = 3
+    n_generations = 15
+    n_children = 150
+    sigma = 4
 
     for i in range(n_training):
         print('Training iteration: ', i)
