@@ -26,30 +26,36 @@ n_hidden_neurons = 10
 env = Environment(experiment_name=experiment_name,
                   player_controller=player_controller(n_hidden_neurons),
                   enemymode="static",
+                  enemies = [1],
                   level=2,
                   speed='normal'
                   )
 
 # TODO Load solution
-mutations = ['uniform','normal']
+fitness_sharing = ['fitness_sharing','no_fitness_sharing']
+groups = ['[4,5,6]', '[4,7,8]']
 
-for mutation in mutations:
+for sharing in fitness_sharing:
 	# tests saved demo solutions for each enemy
-    for enemy in range (1,2):
+    for group in groups:
         gains = []
         for train in range(0, 10):
             mean_indv_gain = []
-            for run in range(5):
-                print('\n LOADING SAVED SOLUTION FOR ENEMY: '+str(enemy)+' mutation: '+str(mutation) + ' training: '+str(train))
+            
+            print('\n LOADING SAVED SOLUTION FOR GROUP: '+str(group) + 'FITNESS: '+ sharing + 'TRAINING: ' + str(train))
+            # Load generalist controller
+            solution = np.loadtxt('results/task2/training/'+str(sharing)+'best_enemy'+str(group)+'_train'+str(train)+
+                '_discrete_uniform_fps_survival_selection_prob_mutuniform_sigma4.txt')
+            for enemy in range(1,9):
                 # Update the enemy  
                 env.update_parameter('enemies',[enemy])
-                # Load specialist controller
-                solution = np.loadtxt('results/task2/best_enemy'+str(enemy)+'_train'+str(train)+'_mut'+mutation+'.txt')
-                env.play(solution)
-                individual_gain = env.get_playerlife() - env.get_enemylife()
-                mean_indv_gain.append(individual_gain)
-                print('individual gain', env.get_playerlife() - env.get_enemylife())
+
+                for run in range(5):
+                    env.play(solution)
+                    individual_gain = env.get_playerlife() - env.get_enemylife()
+                    mean_indv_gain.append(individual_gain)
+                    print('individual gain', env.get_playerlife() - env.get_enemylife())
             gains.append(np.mean(mean_indv_gain))
 
         # write individual gain to text file
-        np.savetxt('results/best_solutions/individual_gain_enemy{}_mut{}'.format(enemy, mutation), gains)
+        np.savetxt(f'results/best_solutions/task2/individual_gain_{sharing}_{group}', gains)

@@ -68,14 +68,15 @@ def line_plot(results, methods, colors, enemy, extra_print=None):
 
 
 if __name__ == "__main__":
-    enemy = '[1, 3, 5]'
-    methods = ['sigma0.5', 'sigma1', 'sigma1.5', 'sigma2']
+    enemy = '[4, 7, 8]'
+    paths = ['results/task2/training/fitness_sharing/', 'results/task2/training/no_fitness_sharing/']
+    methods = ['sigma4', 'sigmaNone']
     results = []
 
-    for method in methods:
-        results_files = load_files('results/task2/parameter_tuning/sigma_tuning/', enemy, method)
+    for path, method in zip(paths, methods):
+        results_files = load_files(path, enemy, method)
         result = preprocess_results(results_files)
         results.append(result)
 
-    colors = ['red', 'cyan', 'green', 'purple', 'orange', 'yellow', 'magenta', 'blue', 'sienna', 'darkviolet', 'teal', 'pink']
+    colors = ['red', 'orange', 'cyan', 'green', 'purple', 'yellow', 'magenta', 'blue', 'sienna', 'darkviolet', 'teal', 'pink']
     line_plot(results, methods, colors, enemy=enemy, extra_print='_sigma_tuning')
