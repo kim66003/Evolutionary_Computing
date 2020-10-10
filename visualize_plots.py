@@ -62,7 +62,7 @@ def line_plot(results, methods, colors, enemy, extra_print=None):
         legend_titles.append(f'{methods[i]}: mean best solution')
         legend_titles.append(f'{methods[i]}: mean average solution')
 
-    plt.legend(legend_titles, fontsize='large')
+    plt.legend(legend_titles, fontsize='medium')
     plt.savefig('results/plots/lineplot_enemy{}{}'.format(enemy, extra_print))
     plt.show()
 
@@ -78,5 +78,7 @@ if __name__ == "__main__":
         result = preprocess_results(results_files)
         results.append(result)
 
-    colors = ['red', 'orange', 'cyan', 'green', 'purple', 'yellow', 'magenta', 'blue', 'sienna', 'darkviolet', 'teal', 'pink']
-    line_plot(results, methods, colors, enemy=enemy, extra_print='_sigma_tuning')
+    methods = ['Fitness sharing', 'No fitness sharing']
+
+    colors = ['red', 'orange', 'cyan', 'blue', 'magenta', 'darkviolet', 'green', 'teal', 'purple', 'yellow', 'sienna', 'pink']
+    line_plot(results, methods, colors, enemy=enemy, extra_print='_fitness_sharing')

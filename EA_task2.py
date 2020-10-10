@@ -282,6 +282,8 @@ if __name__ == "__main__":
     n_generations = 15
     n_children = 150
     sigma = 4
+    if not sharing:
+        sigma = None
 
     for i in range(n_training):
         print('Training iteration: ', i)

@@ -16,7 +16,7 @@ from demo_controller import player_controller
 import numpy as np
 
 os.makedirs("results/", exist_ok=True)
-experiment_name = "results/EA_1/"
+experiment_name = "results/EA_2/"
 os.makedirs(experiment_name, exist_ok=True)
 
 # Update the number of neurons for this specific example
@@ -28,24 +28,28 @@ env = Environment(experiment_name=experiment_name,
                   enemymode="static",
                   enemies = [1],
                   level=2,
-                  speed='normal'
+                  speed='fastest'
                   )
 
 # TODO Load solution
 fitness_sharing = ['fitness_sharing','no_fitness_sharing']
-groups = ['[4,5,6]', '[4,7,8]']
+groups = ['[4, 5, 6]', '[4, 7, 8]']
 
 for sharing in fitness_sharing:
 	# tests saved demo solutions for each enemy
+    if sharing == 'no_fitness_sharing':
+        sigma = None
+    else:
+        sigma = 4
     for group in groups:
         gains = []
         for train in range(0, 10):
             mean_indv_gain = []
             
-            print('\n LOADING SAVED SOLUTION FOR GROUP: '+str(group) + 'FITNESS: '+ sharing + 'TRAINING: ' + str(train))
+            print('\n LOADING SAVED SOLUTION FOR GROUP: '+str(group) + ' FITNESS: '+ sharing + ' TRAINING: ' + str(train))
             # Load generalist controller
-            solution = np.loadtxt('results/task2/training/'+str(sharing)+'best_enemy'+str(group)+'_train'+str(train)+
-                '_discrete_uniform_fps_survival_selection_prob_mutuniform_sigma4.txt')
+            solution = np.loadtxt('./results/task2/training/'+str(sharing)+'/best_enemy'+str(group)+'_train'+str(train)+
+                '_discrete_uniform_fps_survival_selection_prob_mutuniform_sigma'+str(sigma)+'.txt')
             for enemy in range(1,9):
                 # Update the enemy  
                 env.update_parameter('enemies',[enemy])
