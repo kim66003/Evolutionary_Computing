@@ -31,13 +31,13 @@ env = Environment(experiment_name=experiment_name,
                   speed='fastest'
                   )
 
-group = "[IDK]" # TODO
-sharing = "" #TODO
+group = "[4, 7, 8]" # TODO
+sharing = "fitness_sharing" #TODO
 if sharing == 'no_fitness_sharing':
     sigma = None
 else:
     sigma = 4
-train = 1 #TODO
+train = 0 #TODO
 
 player_life = []
 enemy_life = []
